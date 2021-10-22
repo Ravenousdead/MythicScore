@@ -49,9 +49,8 @@
   <p> <span id="test_text"></span></p>
 
   <script>
-    // https://raider.io/characters/us/wyrmrest-accord/Ravenousdead
-    var api_url = ""; // 'https://raider.io/api/v1/characters/profile?region=us&realm=wyrmrest-accord&name=Ravenousdead&fields=mythic_plus_best_runs';
-    var api_url_alt = ""; // 'https://raider.io/api/v1/characters/profile?region=us&realm=wyrmrest-accord&name=Ravenousdead&fields=mythic_plus_alternate_runs';
+    var api_url = "";
+    var api_url_alt = "";
     
     var numberOfCol = 8;
     
@@ -83,8 +82,6 @@
     }
     
     function splitUrl(url){
-      // https://raider.io/characters/us/wyrmrest-accord/Ravenousdead
-      
       var urlArray = url.split("/");
       var urlIndex = urlArray.indexOf("characters");
       
@@ -137,18 +134,25 @@
     
     function getFortLowestKey() {
       var lowestScore = fort_dungeon_scores["12916_10"];
+      var highestScore = fort_dungeon_scores["12916_10"];
       for (var key in fort_dungeon_scores){
         lowestScore = Math.min(lowestScore, fort_dungeon_scores[key]);
+        highestScore = Math.max(highestScore, fort_dungeon_scores[key]);
       }
-      return Math.max(getKeyByScore(lowestScore), 2)
+      var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
+      return Math.max(startingKey, 2)
     }
     
     function getTyranLowestKey() {
       var lowestScore = tyran_dungeon_scores["12916_9"];
+      var highestScore = tyran_dungeon_scores["12916_9"];
       for (var key in tyran_dungeon_scores){
         lowestScore = Math.min(lowestScore, tyran_dungeon_scores[key]);
+        highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
       }
-      return Math.max(getKeyByScore(lowestScore), 2);
+      
+      var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
+      return Math.max(startingKey, 2)
     }
     
     function higherKeyScore(score){
@@ -167,7 +171,6 @@
         }
       }
       return Math.max(2, keylvl);
-      // return Math.floor((baseScore*1.5-150) / 7.5 + 10);
     }
     
     function getScore(baseScore1, baseScore2){
@@ -177,7 +180,6 @@
     }
     
     function getArrayPoints(startingKey, fortBase, tyranBase, affixLetter){
-      <!--- Create and array to loop values into and then return that array. --->
       var arraySize = numberOfCol;
       var newKeyBase = keyScores[startingKey]/1.5;
       var tablePoints = new Array();
@@ -348,6 +350,7 @@
       "12841_10": 0,
     }
     
+ 
     var keyScores = {
       2: 60,
       3: 67.5,
@@ -383,6 +386,21 @@
       33: 322.5,
       34: 330,
       35: 337.5,
+      36: 345,
+      37: 352.5,
+      38: 360,
+      39: 367.5,
+      40: 375,
+      41: 382.5,
+      42: 390,
+      43: 397.5,
+      44: 405,
+      45: 412.5,
+      46: 420,
+      47: 427.5,
+      48: 435,
+      49: 442.5,
+      50: 450,
     };
     
     var keyBaseScores = {
@@ -420,8 +438,23 @@
       33: 215,
       34: 220,
       35: 225,
+      36: 230,
+      37: 235,
+      38: 240,
+      39: 245,
+      40: 250,
+      41: 255,
+      42: 260,
+      43: 265,
+      44: 270,
+      45: 275,
+      46: 280,
+      47: 285,
+      48: 290,
+      49: 295,
+      50: 300,
     };
-    
+   
     
     getBestScore();
   </script>
