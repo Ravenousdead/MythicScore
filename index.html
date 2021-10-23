@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,6 +52,8 @@
   <script>
     var api_url = "";
     var api_url_alt = "";
+    var api_url_score = "";
+    
     
     var numberOfCol = 8;
     
@@ -95,6 +98,7 @@
       
       api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs";
       api_url_alt = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_alternate_runs";
+      api_url_score = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_scores_by_season:current";
     }
     
     <!--- Fetch the top score for each dungeon  --->
@@ -102,7 +106,6 @@
       var response = await fetch(api_url);
       var data = await response.json();
       document.getElementById('characterName').textContent = data.name + " - " + data.realm;
-      document.getElementById('characterScore').textContent = "Score";
       for (var dun of data.mythic_plus_best_runs) {
         var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
         var dungeonScore = dun.score;
@@ -129,6 +132,19 @@
           tyran_dungeon_scores[dungeonID] = dungeonScore;
         }
       }
+      getSeasonScore();
+    }
+    
+    <!--- Fetch the overall score of the character  --->
+    async function getSeasonScore() {
+      var response = await fetch(api_url_score);
+      var data = await response.json();
+      
+      var seasonScore = 0;
+      seasonScore = data.mythic_plus_scores_by_season[0].scores.all;
+      console.log(seasonScore);
+      document.getElementById('characterScore').textContent = "Score - " + seasonScore;
+      
       buildTable();
     }
     
@@ -228,12 +244,20 @@
       let textN = document.createTextNode(dungeonName);
       cellN.appendChild(textN);
       dungeonDiv.appendChild(cellN);
+      
       let cellF = document.createElement("td");
       let textF = document.createTextNode(fortCalcScore);
+      if (fortCalcScore == 0){
+        cellF.style.backgroundColor = "#FF9999";
+      }
       cellF.appendChild(textF);
       dungeonDiv.appendChild(cellF);
+      
       let cellT = document.createElement("td");
       let textT = document.createTextNode(tyranCalcScore);
+      if (tyranCalcScore == 0){
+        cellT.style.backgroundColor = "#FF9999";
+      }
       cellT.appendChild(textT);
       dungeonDiv.appendChild(cellT);
       
