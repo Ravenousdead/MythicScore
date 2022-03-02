@@ -36,6 +36,8 @@
     <tr id="12837_tb_points"></tr>
     <tr id="12916_tb_points"></tr>
     <tr id="12841_tb_points"></tr>
+    <tr id="1000000_tb_points"></tr>
+    <tr id="1000001_tb_points"></tr>
   </table>
   
   <form action="javascript:getURLInput()">
@@ -75,6 +77,8 @@
       document.getElementById("12837_tb_points").innerHTML = "";
       document.getElementById("12916_tb_points").innerHTML = "";
       document.getElementById("12841_tb_points").innerHTML = "";
+      document.getElementById("1000000_tb_points").innerHTML = "";
+      document.getElementById("1000001_tb_points").innerHTML = "";
 
       for (var key in tyran_dungeon_scores){
         tyran_dungeon_scores[key] = 0;
@@ -350,6 +354,13 @@
       <!---ToP 12841--->
       let topDiv = document.getElementById("12841_tb_points");
       buildRow("Theater of Pain: ","12841", topDiv);
+      <!---SoW 1000000--->
+      let sowDiv = document.getElementById("1000000_tb_points");
+      buildRow("Streets of Wonder: ","1000000", sowDiv);
+      <!---Gambit 1000001--->
+      let gambitDiv = document.getElementById("1000001_tb_points");
+      buildRow("So'leah's Gambit: ","1000001", gambitDiv);
+      
     }
     
     var tyran_dungeon_scores = {
@@ -361,6 +372,8 @@
       "12837_9": 0,
       "12916_9": 0,
       "12841_9": 0,
+      "1000000_9": 0,
+      "1000001_9": 0,
     }
     
     var fort_dungeon_scores = {
@@ -372,6 +385,8 @@
       "12837_10": 0,
       "12916_10": 0,
       "12841_10": 0,
+      "1000000_10": 0,
+      "1000001_10": 0,
     }
     
  
