@@ -28,17 +28,24 @@
   <h2 style="color: #D6DCE4"><span id="characterScore"></span></h2>
   <table>
     <tr id="tb_headers"></tr>
-    <tr id="13309_tb_points"></tr>
-    <tr id="12831_tb_points"></tr>
-    <tr id="13334_tb_points"></tr>
-    <tr id="13228_tb_points"></tr>
-    <tr id="12842_tb_points"></tr>
-    <tr id="12837_tb_points"></tr>
-    <tr id="12916_tb_points"></tr>
-    <tr id="12841_tb_points"></tr>
+    <tr id="6984_tb_points"></tr>
+    <tr id="6951_tb_points"></tr>
+    <tr id="999998_tb_points"></tr>
+    <tr id="999999_tb_points"></tr>
+    <tr id="800001_tb_points"></tr>
+    <tr id="800002_tb_points"></tr>
     <tr id="1000000_tb_points"></tr>
     <tr id="1000001_tb_points"></tr>
   </table>
+  
+  <!--- 6984 GD Grimrail Depot --->
+  <!--- 6951 ID Iron Docks --->
+  <!--- 999998 LOWR Return to Karazhan: Lower --->
+  <!--- 999999 UPPR Return to Karazhan: Upper --->
+  <!--- 800001 YARD Mechagon Junkyard --->
+  <!--- 800002 WORK Mechagon Workshop --->
+  <!--- 1000000 STRT Tazavesh: Streets of Wonder --->
+  <!--- 1000001 GMBT Tazavesh: So'leah's Gambit --->
   
   <form action="javascript:getURLInput()">
     <label style="color: #D6DCE4" for="raiderPage">Raider.io URL:</label>
@@ -69,14 +76,12 @@
     
     function clearTable(){
       document.getElementById("tb_headers").innerHTML = "";
-      document.getElementById("13309_tb_points").innerHTML = "";
-      document.getElementById("12831_tb_points").innerHTML = "";
-      document.getElementById("13334_tb_points").innerHTML = "";
-      document.getElementById("13228_tb_points").innerHTML = "";
-      document.getElementById("12842_tb_points").innerHTML = "";
-      document.getElementById("12837_tb_points").innerHTML = "";
-      document.getElementById("12916_tb_points").innerHTML = "";
-      document.getElementById("12841_tb_points").innerHTML = "";
+      document.getElementById("6984_tb_points").innerHTML = "";
+      document.getElementById("6951_tb_points").innerHTML = "";
+      document.getElementById("999998_tb_points").innerHTML = "";
+      document.getElementById("999999_tb_points").innerHTML = "";
+      document.getElementById("800001_tb_points").innerHTML = "";
+      document.getElementById("800002_tb_points").innerHTML = "";
       document.getElementById("1000000_tb_points").innerHTML = "";
       document.getElementById("1000001_tb_points").innerHTML = "";
 
@@ -153,8 +158,8 @@
     }
     
     function getFortLowestKey() {
-      var lowestScore = fort_dungeon_scores["12916_10"];
-      var highestScore = fort_dungeon_scores["12916_10"];
+      var lowestScore = fort_dungeon_scores["1000000_10"];
+      var highestScore = fort_dungeon_scores["1000000_10"];
       for (var key in fort_dungeon_scores){
         lowestScore = Math.min(lowestScore, fort_dungeon_scores[key]);
         highestScore = Math.max(highestScore, fort_dungeon_scores[key]);
@@ -164,8 +169,8 @@
     }
     
     function getTyranLowestKey() {
-      var lowestScore = tyran_dungeon_scores["12916_9"];
-      var highestScore = tyran_dungeon_scores["12916_9"];
+      var lowestScore = tyran_dungeon_scores["1000000_9"];
+      var highestScore = tyran_dungeon_scores["1000000_9"];
       for (var key in tyran_dungeon_scores){
         lowestScore = Math.min(lowestScore, tyran_dungeon_scores[key]);
         highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
@@ -330,61 +335,51 @@
         headerDiv.appendChild(cell);
       }
       
-      <!---DoS 13309--->
-      let dosDiv = document.getElementById("13309_tb_points");
-      buildRow("De Other Side: ","13309", dosDiv);
-      <!---HoA 12831--->
-      let hoaDiv = document.getElementById("12831_tb_points");
-      buildRow("Halls of Atonement: ","12831", hoaDiv);
-      <!---Mists 13334--->
-      let mistsDiv = document.getElementById("13334_tb_points");
-      buildRow("Mists of Tirna Scithe: ","13334", mistsDiv);
-      <!---PF 13228--->
-      let pfDiv = document.getElementById("13228_tb_points");
-      buildRow("Plaguefall: ","13228", pfDiv);
-      <!---Depths 12842--->
-      let depthsDiv = document.getElementById("12842_tb_points");
-      buildRow("Sanguine Depths: ","12842", depthsDiv);
-      <!---SoA 12837--->
-      let soaDiv = document.getElementById("12837_tb_points");
-      buildRow("Spires of Ascension: ","12837", soaDiv);
-      <!---Wake 12916--->
-      let wakeDiv = document.getElementById("12916_tb_points");
-      buildRow("The Necrotic Wake: ","12916", wakeDiv);
-      <!---ToP 12841--->
-      let topDiv = document.getElementById("12841_tb_points");
-      buildRow("Theater of Pain: ","12841", topDiv);
-      <!---SoW 1000000--->
-      let sowDiv = document.getElementById("1000000_tb_points");
-      buildRow("Streets of Wonder: ","1000000", sowDiv);
-      <!---Gambit 1000001--->
-      let gambitDiv = document.getElementById("1000001_tb_points");
-      buildRow("So'leah's Gambit: ","1000001", gambitDiv);
+		<!--- 6984 GD Grimrail Depot --->
+      let div_01 = document.getElementById("6984_tb_points");
+      buildRow("Grimrail Depot: ","6984", div_01);
+		<!--- 6951 ID Iron Docks --->
+      let div_02 = document.getElementById("6951_tb_points");
+      buildRow("Iron Docks: ","6951", div_02);
+		<!--- 999998 LOWR Return to Karazhan: Lower --->
+      let div_03 = document.getElementById("999998_tb_points");
+      buildRow("Lower Karazhan: ","999998", div_03);
+		<!--- 999999 UPPR Return to Karazhan: Upper --->
+      let div_04 = document.getElementById("999999_tb_points");
+      buildRow("Upper Karazhan: ","999999", div_04);
+		<!--- 800001 YARD Mechagon Junkyard --->
+      let div_05 = document.getElementById("800001_tb_points");
+      buildRow("Mechagon Junkyard: ","800001", div_05);
+		<!--- 800002 WORK Mechagon Workshop --->
+      let div_06 = document.getElementById("800002_tb_points");
+      buildRow("Mechagon Workshop: ","800002", div_06);
+		<!--- 1000000 STRT Tazavesh: Streets of Wonder --->
+      let div_07 = document.getElementById("1000000_tb_points");
+      buildRow("Streets of Wonder: ","1000000", div_07);
+		<!--- 1000001 GMBT Tazavesh: So'leah's Gambit --->
+      let div_08 = document.getElementById("1000001_tb_points");
+      buildRow("So'leah's Gambit: ","1000001", div_08);
       
     }
     
     var tyran_dungeon_scores = {
-      "13309_9": 0,
-      "12831_9": 0,
-      "13334_9": 0,
-      "13228_9": 0,
-      "12842_9": 0,
-      "12837_9": 0,
-      "12916_9": 0,
-      "12841_9": 0,
+      "6984_9": 0,
+      "6951_9": 0,
+      "999998_9": 0,
+      "999999_9": 0,
+      "800001_9": 0,
+      "800002_9": 0,
       "1000000_9": 0,
       "1000001_9": 0,
     }
     
     var fort_dungeon_scores = {
-      "13309_10": 0,
-      "12831_10": 0,
-      "13334_10": 0,
-      "13228_10": 0,
-      "12842_10": 0,
-      "12837_10": 0,
-      "12916_10": 0,
-      "12841_10": 0,
+      "6984_10": 0,
+      "6951_10": 0,
+      "999998_10": 0,
+      "999999_10": 0,
+      "800001_10": 0,
+      "800002_10": 0,
       "1000000_10": 0,
       "1000001_10": 0,
     }
