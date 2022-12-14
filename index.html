@@ -1,497 +1,495 @@
-
 <!DOCTYPE html>
-<html lang="en">
+        <html lang="en">
 
-<head>
-  <style>
-    th,
-    td {
-      border: 1px solid black;
-      border-radius: 4px;
-      text-align: center;
-      width: 30px;
-      background-color: White;
-      padding: 5px;
-    }
-    table { 
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
-  <meta charset="UTF-8" />
-  <meta name="viewpoint" content="width=\, initial-scale=1.0" />
-  <title>Score Chart</title>
-</head>
+        <head>
+        <style>
+        th,
+        td {
+        border: 1px solid black;
+        border-radius: 4px;
+        text-align: center;
+        width: 30px;
+        background-color: White;
+        padding: 5px;
+        }
+        table {
+        margin-left: auto;
+        margin-right: auto;
+        }
+        </style>
+        <meta charset="UTF-8" />
+        <meta name="viewpoint" content="width=\, initial-scale=1.0" />
+        <title>Score Chart</title>
+        </head>
 
-<body style="background-color: #44546A; text-align:center">
-  <h1 style="color: #D6DCE4"> <span id="characterName"></span></h1>
-  <h2 style="color: #D6DCE4"><span id="characterScore"></span></h2>
-  <table>
-    <tr id="tb_headers"></tr>
-    <tr id="6984_tb_points"></tr>
-    <tr id="6951_tb_points"></tr>
-    <tr id="999998_tb_points"></tr>
-    <tr id="999999_tb_points"></tr>
-    <tr id="800001_tb_points"></tr>
-    <tr id="800002_tb_points"></tr>
-    <tr id="1000000_tb_points"></tr>
-    <tr id="1000001_tb_points"></tr>
-  </table>
-  
-  <!--- 6984 GD Grimrail Depot --->
-  <!--- 6951 ID Iron Docks --->
-  <!--- 999998 LOWR Return to Karazhan: Lower --->
-  <!--- 999999 UPPR Return to Karazhan: Upper --->
-  <!--- 800001 YARD Mechagon Junkyard --->
-  <!--- 800002 WORK Mechagon Workshop --->
-  <!--- 1000000 STRT Tazavesh: Streets of Wonder --->
-  <!--- 1000001 GMBT Tazavesh: So'leah's Gambit --->
-  
-  <form action="javascript:getURLInput()">
-    <label style="color: #D6DCE4" for="raiderPage">Raider.io URL:</label>
-    <input style="margin-top: 50px" size="50" type="text" id="raiderioUrl" name="raiderPage" /><br />
-  </form>
-  
-  <form action="javascript:getURLInput()">
-    <input style="margin-top: 15px" type="submit" value="Submit" id="submitURL">
-  </form>
-  
-  <p> <span id="test_text"></span></p>
+        <body style="background-color: #44546A; text-align:center">
+        <h1 style="color: #D6DCE4"> <span id="characterName"></span></h1>
+        <h2 style="color: #D6DCE4"><span id="characterScore"></span></h2>
+        <table>
+        <tr id="tb_headers"></tr>
+        <tr id="14032_tb_points"></tr>
+        <tr id="14063_tb_points"></tr>
+        <tr id="13954_tb_points"></tr>
+        <tr id="13982_tb_points"></tr>
+        <tr id="8079_tb_points"></tr>
+        <tr id="7672_tb_points"></tr>
+        <tr id="6932_tb_points"></tr>
+        <tr id="5965_tb_points"></tr>
+        </table>
 
-  <script>
-    var api_url = "";
-    var api_url_alt = "";
-    var api_url_score = "";
-    
-    
-    var numberOfCol = 8;
-    
-    function getURLInput(){
-      var inputUrl = document.getElementById("raiderioUrl").value;
-      splitUrl(inputUrl);
-      
-      clearTable();
-      getBestScore();
-    }
-    
-    function clearTable(){
-      document.getElementById("tb_headers").innerHTML = "";
-      document.getElementById("6984_tb_points").innerHTML = "";
-      document.getElementById("6951_tb_points").innerHTML = "";
-      document.getElementById("999998_tb_points").innerHTML = "";
-      document.getElementById("999999_tb_points").innerHTML = "";
-      document.getElementById("800001_tb_points").innerHTML = "";
-      document.getElementById("800002_tb_points").innerHTML = "";
-      document.getElementById("1000000_tb_points").innerHTML = "";
-      document.getElementById("1000001_tb_points").innerHTML = "";
+        <!--- 14032 AA Algeth'ar Academy --->
+        <!--- 14063 RLP Ruby Life Pools --->
+        <!--- 13954 AV The Azure Vault --->
+        <!--- 13982 NO The Nokhud Offensive --->
+        <!--- 8079 COS Court of Stars --->
+        <!--- 7672 HOV Halls of Valor --->
+        <!--- 6932 SBG Shadowmoon Burial Grounds --->
+        <!--- 5965 TJS Temple of the Jade Serpent --->
 
-      for (var key in tyran_dungeon_scores){
+        <form action="javascript:getURLInput()">
+        <label style="color: #D6DCE4" for="raiderPage">Raider.io URL:</label>
+        <input style="margin-top: 50px" size="50" type="text" id="raiderioUrl" name="raiderPage" /><br />
+        </form>
+
+        <form action="javascript:getURLInput()">
+        <input style="margin-top: 15px" type="submit" value="Submit" id="submitURL">
+        </form>
+
+        <p> <span id="test_text"></span></p>
+
+        <script>
+        var api_url = "";
+        var api_url_alt = "";
+        var api_url_score = "";
+
+
+        var numberOfCol = 8;
+
+        function getURLInput(){
+        var inputUrl = document.getElementById("raiderioUrl").value;
+        splitUrl(inputUrl);
+
+        clearTable();
+        getBestScore();
+        }
+
+        function clearTable(){
+        document.getElementById("tb_headers").innerHTML = "";
+        document.getElementById("14032_tb_points").innerHTML = "";
+        document.getElementById("14063_tb_points").innerHTML = "";
+        document.getElementById("13954_tb_points").innerHTML = "";
+        document.getElementById("13982_tb_points").innerHTML = "";
+        document.getElementById("8079_tb_points").innerHTML = "";
+        document.getElementById("7672_tb_points").innerHTML = "";
+        document.getElementById("6932_tb_points").innerHTML = "";
+        document.getElementById("5965_tb_points").innerHTML = "";
+
+        for (var key in tyran_dungeon_scores){
         tyran_dungeon_scores[key] = 0;
-      }
-      for (var key in fort_dungeon_scores){
+        }
+        for (var key in fort_dungeon_scores){
         fort_dungeon_scores[key] = 0;
-      }
-    }
-    
-    function splitUrl(url){
-      var urlArray = url.split("/");
-      var urlIndex = urlArray.indexOf("characters");
-      
-      var region = "";
-      var realm = "";
-      var name = "";
-      
-      region = urlArray[urlIndex + 1];
-      realm = urlArray[urlIndex + 2];
-      name = urlArray[urlIndex + 3];
-      
-      api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs";
-      api_url_alt = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_alternate_runs";
-      api_url_score = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_scores_by_season:current";
-    }
-    
-    <!--- Fetch the top score for each dungeon  --->
-    async function getBestScore() {
-      var response = await fetch(api_url);
-      var data = await response.json();
-      document.getElementById('characterName').textContent = data.name + " - " + data.realm;
-      for (var dun of data.mythic_plus_best_runs) {
+        }
+        }
+
+        function splitUrl(url){
+        var urlArray = url.split("/");
+        var urlIndex = urlArray.indexOf("characters");
+
+        var region = "";
+        var realm = "";
+        var name = "";
+
+        region = urlArray[urlIndex + 1];
+        realm = urlArray[urlIndex + 2];
+        name = urlArray[urlIndex + 3];
+
+        api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs";
+        api_url_alt = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_alternate_runs";
+        api_url_score = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_scores_by_season:current";
+        }
+
+        <!--- Fetch the top score for each dungeon --->
+        async function getBestScore() {
+        var response = await fetch(api_url);
+        var data = await response.json();
+        document.getElementById('characterName').textContent = data.name + " - " + data.realm;
+        for (var dun of data.mythic_plus_best_runs) {
         var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
         var dungeonScore = dun.score;
         if (dun.affixes[0].id == 10){
-          fort_dungeon_scores[dungeonID] = dungeonScore;
+        fort_dungeon_scores[dungeonID] = dungeonScore;
         } else {
-          tyran_dungeon_scores[dungeonID] = dungeonScore;
+        tyran_dungeon_scores[dungeonID] = dungeonScore;
         }
-      }
-      
-      getAltScore();
-    }
-    
-    <!--- Fetch the alt-top score for each dungeon  --->
-    async function getAltScore() {
-      var response = await fetch(api_url_alt);
-      var data = await response.json();
-      for (var dun of data.mythic_plus_alternate_runs) {
+        }
+
+        getAltScore();
+        }
+
+        <!--- Fetch the alt-top score for each dungeon --->
+        async function getAltScore() {
+        var response = await fetch(api_url_alt);
+        var data = await response.json();
+        for (var dun of data.mythic_plus_alternate_runs) {
         var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
         var dungeonScore = dun.score;
         if (dun.affixes[0].id == 10){
-          fort_dungeon_scores[dungeonID] = dungeonScore;
+        fort_dungeon_scores[dungeonID] = dungeonScore;
         } else {
-          tyran_dungeon_scores[dungeonID] = dungeonScore;
+        tyran_dungeon_scores[dungeonID] = dungeonScore;
         }
-      }
-      getSeasonScore();
-    }
-    
-    <!--- Fetch the overall score of the character  --->
-    async function getSeasonScore() {
-      var response = await fetch(api_url_score);
-      var data = await response.json();
-      
-      var seasonScore = 0;
-      seasonScore = data.mythic_plus_scores_by_season[0].scores.all;
-      console.log(seasonScore);
-      document.getElementById('characterScore').textContent = "Score - " + seasonScore;
-      
-      buildTable();
-    }
-    
-    function getFortLowestKey() {
-      var lowestScore = fort_dungeon_scores["1000000_10"];
-      var highestScore = fort_dungeon_scores["1000000_10"];
-      for (var key in fort_dungeon_scores){
+        }
+        getSeasonScore();
+        }
+
+        <!--- Fetch the overall score of the character --->
+        async function getSeasonScore() {
+        var response = await fetch(api_url_score);
+        var data = await response.json();
+
+        var seasonScore = 0;
+        seasonScore = data.mythic_plus_scores_by_season[0].scores.all;
+        console.log(seasonScore);
+        document.getElementById('characterScore').textContent = "Score - " + seasonScore;
+
+        buildTable();
+        }
+
+        function getFortLowestKey() {
+        var lowestScore = fort_dungeon_scores["6932_10"];
+        var highestScore = fort_dungeon_scores["6932_10"];
+        for (var key in fort_dungeon_scores){
         lowestScore = Math.min(lowestScore, fort_dungeon_scores[key]);
         highestScore = Math.max(highestScore, fort_dungeon_scores[key]);
-      }
-      var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
-      return Math.max(startingKey, 2)
-    }
-    
-    function getTyranLowestKey() {
-      var lowestScore = tyran_dungeon_scores["1000000_9"];
-      var highestScore = tyran_dungeon_scores["1000000_9"];
-      for (var key in tyran_dungeon_scores){
+        }
+        var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
+        return Math.max(startingKey, 2)
+        }
+
+        function getTyranLowestKey() {
+        var lowestScore = tyran_dungeon_scores["6932_9"];
+        var highestScore = tyran_dungeon_scores["6932_9"];
+        for (var key in tyran_dungeon_scores){
         lowestScore = Math.min(lowestScore, tyran_dungeon_scores[key]);
         highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
-      }
-      
-      var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
-      return Math.max(startingKey, 2)
-    }
-    
-    function higherKeyScore(score){
-      return Math.round(score * 1.5 * 100) / 100;
-    }
-    function lowerKeyScore(score){
-      return Math.round(score / 2 * 100) / 100;
-    }
-    
-    function getKeyByScore(baseScore){
-      var keylvl = 0;
-      var wowScore = baseScore * 1.5;
-      for (var ks in keyScores){
+        }
+
+        var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
+        return Math.max(startingKey, 2)
+        }
+
+        function higherKeyScore(score){
+        return Math.round(score * 1.5 * 100) / 100;
+        }
+        function lowerKeyScore(score){
+        return Math.round(score / 2 * 100) / 100;
+        }
+
+        function getKeyByScore(baseScore){
+        var keylvl = 0;
+        var wowScore = baseScore * 1.5;
+        for (var ks in keyScores){
         if (keyScores[ks] < wowScore){
-          keylvl = parseInt(ks);
+        keylvl = parseInt(ks);
         }
-      }
-      return Math.max(2, keylvl);
-    }
-    
-    function getScore(baseScore1, baseScore2){
-      var higherScore = Math.max(baseScore1, baseScore2)*1.5;
-      var lowerScore = Math.min(baseScore1, baseScore2)/2;
-      return higherScore + lowerScore;
-    }
-    
-    function getArrayPoints(startingKey, fortBase, tyranBase, affixLetter){
-      var arraySize = numberOfCol;
-      var newKeyBase = keyScores[startingKey]/1.5;
-      var tablePoints = new Array();
-      var currentScore = getScore(fortBase, tyranBase);
-          
-      if (affixLetter == 'F'){
+        }
+        return Math.max(2, keylvl);
+        }
+
+        function getScore(baseScore1, baseScore2){
+        var higherScore = Math.max(baseScore1, baseScore2)*1.5;
+        var lowerScore = Math.min(baseScore1, baseScore2)/2;
+        return higherScore + lowerScore;
+        }
+
+        function getArrayPoints(startingKey, fortBase, tyranBase, affixLetter){
+        var arraySize = numberOfCol;
+        var newKeyBase = keyScores[startingKey]/1.5;
+        var tablePoints = new Array();
+        var currentScore = getScore(fortBase, tyranBase);
+
+        if (affixLetter == 'F'){
         for(var i = 0; i < arraySize; i++){
-          newKeyBase = keyScores[(startingKey + i)]/1.5;
-          var newFortBase = Math.max(newKeyBase, fortBase);
-          var newScore = getScore(newFortBase, tyranBase);
-          tablePoints.push(Math.round(Math.max(0, newScore-currentScore)*10)/10);
+        newKeyBase = keyScores[(startingKey + i)]/1.5;
+        var newFortBase = Math.max(newKeyBase, fortBase);
+        var newScore = getScore(newFortBase, tyranBase);
+        tablePoints.push(Math.round(Math.max(0, newScore-currentScore)*10)/10);
         }
-      }
-      
-      if (affixLetter == 'T'){
+        }
+
+        if (affixLetter == 'T'){
         for(var i = 0; i < arraySize; i++){
-          newKeyBase = keyScores[startingKey + i]/1.5;
-          var newTyranBase = Math.max(newKeyBase, tyranBase);
-          var newScore = getScore(newTyranBase, fortBase);
-          tablePoints.push(Math.round(Math.max(0, newScore-currentScore)*10)/10);
+        newKeyBase = keyScores[startingKey + i]/1.5;
+        var newTyranBase = Math.max(newKeyBase, tyranBase);
+        var newScore = getScore(newTyranBase, fortBase);
+        tablePoints.push(Math.round(Math.max(0, newScore-currentScore)*10)/10);
         }
-      }
-      
-      return tablePoints;
-    }
-    
-    function getTestArray(){
-      return [100, 150, 375];
-    }
-    
-    function buildRow(dungeonName ,dungeonID, dungeonDiv){
-      var fortID = dungeonID + "_10"
-      var tyranID = dungeonID + "_9"
-      var fortCalcScore = 0;
-      var tyranCalcScore = 0;
-      
-      if (fort_dungeon_scores[fortID] > tyran_dungeon_scores[tyranID]){
+        }
+
+        return tablePoints;
+        }
+
+        function getTestArray(){
+        return [100, 150, 375];
+        }
+
+        function buildRow(dungeonName ,dungeonID, dungeonDiv){
+        var fortID = dungeonID + "_10"
+        var tyranID = dungeonID + "_9"
+        var fortCalcScore = 0;
+        var tyranCalcScore = 0;
+
+        if (fort_dungeon_scores[fortID] > tyran_dungeon_scores[tyranID]){
         fortCalcScore = higherKeyScore(fort_dungeon_scores[fortID]);
         tyranCalcScore = lowerKeyScore(tyran_dungeon_scores[tyranID]);
-      } else {
+        } else {
         fortCalcScore = lowerKeyScore(fort_dungeon_scores[fortID]);
         tyranCalcScore = higherKeyScore(tyran_dungeon_scores[tyranID]);
-      }
-      
-      let cellN = document.createElement("td");
-      let textN = document.createTextNode(dungeonName);
-      cellN.appendChild(textN);
-      dungeonDiv.appendChild(cellN);
-      
-      let cellF = document.createElement("td");
-      let textF = document.createTextNode(fortCalcScore);
-      if (fortCalcScore == 0){
+        }
+
+        let cellN = document.createElement("td");
+        let textN = document.createTextNode(dungeonName);
+        cellN.appendChild(textN);
+        dungeonDiv.appendChild(cellN);
+
+        let cellF = document.createElement("td");
+        let textF = document.createTextNode(fortCalcScore);
+        if (fortCalcScore == 0){
         cellF.style.backgroundColor = "#FF9999";
-      }
-      cellF.appendChild(textF);
-      dungeonDiv.appendChild(cellF);
-      
-      let cellT = document.createElement("td");
-      let textT = document.createTextNode(tyranCalcScore);
-      if (tyranCalcScore == 0){
+        }
+        cellF.appendChild(textF);
+        dungeonDiv.appendChild(cellF);
+
+        let cellT = document.createElement("td");
+        let textT = document.createTextNode(tyranCalcScore);
+        if (tyranCalcScore == 0){
         cellT.style.backgroundColor = "#FF9999";
-      }
-      cellT.appendChild(textT);
-      dungeonDiv.appendChild(cellT);
-      
-      
-      var startingKey = getFortLowestKey();
-      var dungeonRow = getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID],'F');
-      startingKey = getTyranLowestKey();
-      dungeonRow = dungeonRow.concat(getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID],'T'));
-      
-      for (var i=0; i < dungeonRow.length; i++){
+        }
+        cellT.appendChild(textT);
+        dungeonDiv.appendChild(cellT);
+
+
+        var startingKey = getFortLowestKey();
+        var dungeonRow = getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID],'F');
+        startingKey = getTyranLowestKey();
+        dungeonRow = dungeonRow.concat(getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID],'T'));
+
+        for (var i=0; i < dungeonRow.length; i++){
         var pointValue = dungeonRow[i];
-        
+
         let cell = document.createElement("td");
         if(pointValue > 0){
-          cell.style.backgroundColor = "#FFE699";
+        cell.style.backgroundColor = "#FFE699";
         } else {
-          cell.style.backgroundColor = "#8497B0";
+        cell.style.backgroundColor = "#8497B0";
         }
         let text = document.createTextNode(pointValue);
         cell.appendChild(text);
         dungeonDiv.appendChild(cell);
-      }
-    }
-    
-    function buildTable(){
-      
-      <!---Header--->
-      let headerDiv = document.getElementById("tb_headers");
-      
-      // <th style="width: 180px; background-color: #ACB9CA">Dungeon</th>
-      let cell_dungeon = document.createElement("td");
-      cell_dungeon.style.backgroundColor = "#ACB9CA";
-      cell_dungeon.style.width = "180px";
-      let text_dungeon = document.createTextNode("Dungeon");
-      cell_dungeon.appendChild(text_dungeon);
-      headerDiv.appendChild(cell_dungeon);
-      //<th style="width: 100px; background-color: #9BC2E6">Fortified</th>
-      let cell_fortified = document.createElement("td");
-      cell_fortified.style.backgroundColor = "#9BC2E6";
-      cell_fortified.style.width = "100px";
-      let text_fortified = document.createTextNode("Fortified");
-      cell_fortified.appendChild(text_fortified);
-      headerDiv.appendChild(cell_fortified);
-      //<th style="width: 100px; background-color: #A9D08E">Tyrannical</th>
-      let cell_tyrannical = document.createElement("td");
-      cell_tyrannical.style.backgroundColor = "#A9D08E";
-      cell_tyrannical.style.width = "100px";
-      let text_tyrannical = document.createTextNode("Tyrannical");
-      cell_tyrannical.appendChild(text_tyrannical);
-      headerDiv.appendChild(cell_tyrannical);
-      
-      var startingFortKey = getFortLowestKey();
-      for (var i=0; i < numberOfCol; i++){
+        }
+        }
+
+        function buildTable(){
+
+        <!---Header--->
+        let headerDiv = document.getElementById("tb_headers");
+
+        // <th style="width: 180px; background-color: #ACB9CA">Dungeon</th>
+        let cell_dungeon = document.createElement("td");
+        cell_dungeon.style.backgroundColor = "#ACB9CA";
+        cell_dungeon.style.width = "180px";
+        let text_dungeon = document.createTextNode("Dungeon");
+        cell_dungeon.appendChild(text_dungeon);
+        headerDiv.appendChild(cell_dungeon);
+        //<th style="width: 100px; background-color: #9BC2E6">Fortified</th>
+        let cell_fortified = document.createElement("td");
+        cell_fortified.style.backgroundColor = "#9BC2E6";
+        cell_fortified.style.width = "100px";
+        let text_fortified = document.createTextNode("Fortified");
+        cell_fortified.appendChild(text_fortified);
+        headerDiv.appendChild(cell_fortified);
+        //<th style="width: 100px; background-color: #A9D08E">Tyrannical</th>
+        let cell_tyrannical = document.createElement("td");
+        cell_tyrannical.style.backgroundColor = "#A9D08E";
+        cell_tyrannical.style.width = "100px";
+        let text_tyrannical = document.createTextNode("Tyrannical");
+        cell_tyrannical.appendChild(text_tyrannical);
+        headerDiv.appendChild(cell_tyrannical);
+
+        var startingFortKey = getFortLowestKey();
+        for (var i=0; i < numberOfCol; i++){
         let cell = document.createElement("td");
         cell.style.backgroundColor = "#9BC2E6";
         let text = document.createTextNode(startingFortKey+i);
         cell.appendChild(text);
         headerDiv.appendChild(cell);
-      }
-      var startingTyranKey = getTyranLowestKey();
-      for (var i=0; i < numberOfCol; i++){
+        }
+        var startingTyranKey = getTyranLowestKey();
+        for (var i=0; i < numberOfCol; i++){
         let cell = document.createElement("td");
         cell.style.backgroundColor = "#A9D08E";
         let text = document.createTextNode(startingTyranKey+i);
         cell.appendChild(text);
         headerDiv.appendChild(cell);
-      }
-      
-		<!--- 6984 GD Grimrail Depot --->
-      let div_01 = document.getElementById("6984_tb_points");
-      buildRow("Grimrail Depot: ","6984", div_01);
-		<!--- 6951 ID Iron Docks --->
-      let div_02 = document.getElementById("6951_tb_points");
-      buildRow("Iron Docks: ","6951", div_02);
-		<!--- 999998 LOWR Return to Karazhan: Lower --->
-      let div_03 = document.getElementById("999998_tb_points");
-      buildRow("Lower Karazhan: ","999998", div_03);
-		<!--- 999999 UPPR Return to Karazhan: Upper --->
-      let div_04 = document.getElementById("999999_tb_points");
-      buildRow("Upper Karazhan: ","999999", div_04);
-		<!--- 800001 YARD Mechagon Junkyard --->
-      let div_05 = document.getElementById("800001_tb_points");
-      buildRow("Mechagon Junkyard: ","800001", div_05);
-		<!--- 800002 WORK Mechagon Workshop --->
-      let div_06 = document.getElementById("800002_tb_points");
-      buildRow("Mechagon Workshop: ","800002", div_06);
-		<!--- 1000000 STRT Tazavesh: Streets of Wonder --->
-      let div_07 = document.getElementById("1000000_tb_points");
-      buildRow("Streets of Wonder: ","1000000", div_07);
-		<!--- 1000001 GMBT Tazavesh: So'leah's Gambit --->
-      let div_08 = document.getElementById("1000001_tb_points");
-      buildRow("So'leah's Gambit: ","1000001", div_08);
-      
-    }
-    
-    var tyran_dungeon_scores = {
-      "6984_9": 0,
-      "6951_9": 0,
-      "999998_9": 0,
-      "999999_9": 0,
-      "800001_9": 0,
-      "800002_9": 0,
-      "1000000_9": 0,
-      "1000001_9": 0,
-    }
-    
-    var fort_dungeon_scores = {
-      "6984_10": 0,
-      "6951_10": 0,
-      "999998_10": 0,
-      "999999_10": 0,
-      "800001_10": 0,
-      "800002_10": 0,
-      "1000000_10": 0,
-      "1000001_10": 0,
-    }
-    
- 
-    var keyScores = {
-      2: 60,
-      3: 67.5,
-      4: 82.5,
-      5: 90,
-      6: 97.5,
-      7: 112.5,
-      8: 120,
-      9: 127.5,
-      10: 150,
-      11: 157.5,
-      12: 165,
-      13: 172.5,
-      14: 180,
-      15: 187.5,
-      16: 195,
-      17: 202.5,
-      18: 210,
-      19: 217.5,
-      20: 225,
-      21: 232.5,
-      22: 240,
-      23: 247.5,
-      24: 255,
-      25: 262.5,
-      26: 270,
-      27: 277.5,
-      28: 285,
-      29: 292.5,
-      30: 300,
-      31: 307.5,
-      32: 315,
-      33: 322.5,
-      34: 330,
-      35: 337.5,
-      36: 345,
-      37: 352.5,
-      38: 360,
-      39: 367.5,
-      40: 375,
-      41: 382.5,
-      42: 390,
-      43: 397.5,
-      44: 405,
-      45: 412.5,
-      46: 420,
-      47: 427.5,
-      48: 435,
-      49: 442.5,
-      50: 450,
-    };
-    
-    var keyBaseScores = {
-      2: 40,
-      3: 45,
-      4: 55,
-      5: 60,
-      6: 65,
-      7: 75,
-      8: 80,
-      9: 85,
-      10: 100,
-      11: 105,
-      12: 110,
-      13: 115,
-      14: 120,
-      15: 125,
-      16: 130,
-      17: 135,
-      18: 140,
-      19: 145,
-      20: 150,
-      21: 155,
-      22: 160,
-      23: 165,
-      24: 170,
-      25: 175,
-      26: 180,
-      27: 185,
-      28: 190,
-      29: 195,
-      30: 200,
-      31: 205,
-      32: 210,
-      33: 215,
-      34: 220,
-      35: 225,
-      36: 230,
-      37: 235,
-      38: 240,
-      39: 245,
-      40: 250,
-      41: 255,
-      42: 260,
-      43: 265,
-      44: 270,
-      45: 275,
-      46: 280,
-      47: 285,
-      48: 290,
-      49: 295,
-      50: 300,
-    };
-   
-    
-    getBestScore();
-  </script>
-</body>
+        }
+
+        <!--- 14032 AA Algeth'ar Academy --->
+        let div_01 = document.getElementById("14032_tb_points");
+        buildRow("Algeth'ar Academy: ","14032", div_01);
+        <!--- 14063 RLP Ruby Life Pools --->
+        let div_02 = document.getElementById("14063_tb_points");
+        buildRow("Ruby Life Pools: ","14063", div_02);
+        <!--- 13954 AV The Azure Vault --->
+        let div_03 = document.getElementById("13954_tb_points");
+        buildRow("The Azure Vault: ","13954", div_03);
+        <!--- 13982 NO The Nokhud Offensive --->
+        let div_04 = document.getElementById("13982_tb_points");
+        buildRow("Nokhud Offensive: ","13982", div_04);
+        <!--- 8079 COS Court of Stars --->
+        let div_05 = document.getElementById("8079_tb_points");
+        buildRow("Court of Stars: ","8079", div_05);
+        <!--- 7672 HOV Halls of Valor --->
+        let div_06 = document.getElementById("7672_tb_points");
+        buildRow("Halls of Valor: ","7672", div_06);
+        <!--- 6932 SBG Shadowmoon Burial Grounds --->
+        let div_07 = document.getElementById("6932_tb_points");
+        buildRow("Burial Grounds: ","6932", div_07);
+        <!--- 5965 TJS Temple of the Jade Serpent --->
+        let div_08 = document.getElementById("5965_tb_points");
+        buildRow("Temple of the Jade: ","5965", div_08);
+
+        }
+
+        var tyran_dungeon_scores = {
+        "14032_9": 0,
+        "14063_9": 0,
+        "13954_9": 0,
+        "13982_9": 0,
+        "8079_9": 0,
+        "7672_9": 0,
+        "6932_9": 0,
+        "5965_9": 0,
+        }
+
+        var fort_dungeon_scores = {
+        "14032_10": 0,
+        "14063_10": 0,
+        "13954_10": 0,
+        "13982_10": 0,
+        "8079_10": 0,
+        "7672_10": 0,
+        "6932_10": 0,
+        "5965_10": 0,
+        }
+
+
+        var keyScores = {
+        2: 60,
+        3: 67.5,
+        4: 82.5,
+        5: 90,
+        6: 97.5,
+        7: 112.5,
+        8: 120,
+        9: 127.5,
+        10: 150,
+        11: 160.5,
+        12: 171,
+        13: 181.5,
+        14: 192,
+        15: 202.5,
+        16: 213,
+        17: 223.5,
+        18: 234,
+        19: 244.5,
+        20: 255,
+        21: 265.5,
+        22: 276,
+        23: 286.5,
+        24: 297,
+        25: 307.5,
+        26: 318,
+        27: 328.5,
+        28: 339,
+        29: 349.5,
+        30: 360,
+        31: 370.5,
+        32: 381,
+        33: 391.5,
+        34: 402,
+        35: 412.5,
+        36: 423,
+        37: 433.5,
+        38: 444,
+        39: 454.5,
+        40: 465,
+        41: 475.5,
+        42: 486,
+        43: 496.5,
+        44: 507,
+        45: 517.5,
+        46: 528,
+        47: 538.5,
+        48: 549,
+        49: 559.5,
+        50: 570,
+        };
+
+        var keyBaseScores = {
+        2: 40,
+        3: 45,
+        4: 55,
+        5: 60,
+        6: 65,
+        7: 75,
+        8: 80,
+        9: 85,
+        10: 100,
+        11: 107,
+        12: 114,
+        13: 121,
+        14: 128,
+        15: 135,
+        16: 142,
+        17: 149,
+        18: 156,
+        19: 163,
+        20: 170,
+        21: 177,
+        22: 184,
+        23: 191,
+        24: 198,
+        25: 205,
+        26: 212,
+        27: 219,
+        28: 226,
+        29: 233,
+        30: 240,
+        31: 247,
+        32: 254,
+        33: 261,
+        34: 268,
+        35: 275,
+        36: 282,
+        37: 289,
+        38: 296,
+        39: 303,
+        40: 310,
+        41: 317,
+        42: 324,
+        43: 331,
+        44: 338,
+        45: 345,
+        46: 352,
+        47: 359,
+        48: 366,
+        49: 373,
+        50: 380,
+        };
+
+        getBestScore();
+        </script>
+        </body>
 
 </html>
