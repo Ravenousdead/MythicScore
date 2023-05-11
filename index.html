@@ -27,24 +27,15 @@
         <h2 style="color: #D6DCE4"><span id="characterScore"></span></h2>
         <table>
         <tr id="tb_headers"></tr>
-        <tr id="14032_tb_points"></tr>
-        <tr id="14063_tb_points"></tr>
-        <tr id="13954_tb_points"></tr>
-        <tr id="13982_tb_points"></tr>
-        <tr id="8079_tb_points"></tr>
-        <tr id="7672_tb_points"></tr>
-        <tr id="6932_tb_points"></tr>
-        <tr id="5965_tb_points"></tr>
+        <tr id="tb_row_01"></tr>
+        <tr id="tb_row_02"></tr>
+        <tr id="tb_row_03"></tr>
+        <tr id="tb_row_04"></tr>
+        <tr id="tb_row_05"></tr>
+        <tr id="tb_row_06"></tr>
+        <tr id="tb_row_07"></tr>
+        <tr id="tb_row_08"></tr>
         </table>
-
-        <!--- 14032 AA Algeth'ar Academy --->
-        <!--- 14063 RLP Ruby Life Pools --->
-        <!--- 13954 AV The Azure Vault --->
-        <!--- 13982 NO The Nokhud Offensive --->
-        <!--- 8079 COS Court of Stars --->
-        <!--- 7672 HOV Halls of Valor --->
-        <!--- 6932 SBG Shadowmoon Burial Grounds --->
-        <!--- 5965 TJS Temple of the Jade Serpent --->
 
         <form action="javascript:getURLInput()">
         <label style="color: #D6DCE4" for="raiderPage">Raider.io URL:</label>
@@ -57,7 +48,36 @@
 
         <p> <span id="test_text"></span></p>
 
+
+
+		<!--- 13991 bh Brackenhide Hollow --->
+		<!--- 14082 hoi Halls of Infusion --->
+		<!--- 14011 nel Neltharus --->
+		<!--- 14011 ulot Uldaman: Legacy of Tyr --->
+		<!--- 9164 free Freehold --->
+		<!--- 7546 nl Neltharion's Lair --->
+		<!--- 9391 tu The Underrot --->
+		<!--- 5035 tvp The Vortex Pinnacle --->
+
         <script>
+		var row01DungeonLabel = "Brackenhide Hollow";
+		var row01DungeonID = "13991";
+		var row02DungeonLabel = "Halls of Infusion";
+		var row02DungeonID = "14082";
+		var row03DungeonLabel = "Neltharus";
+		var row03DungeonID = "14011";
+		var row04DungeonLabel = "Uldaman: Legacy of Tyr";
+		var row04DungeonID = "13968";
+		var row05DungeonLabel = "Freehold";
+		var row05DungeonID = "9164";
+		var row06DungeonLabel = "Neltharion's Lair";
+		var row06DungeonID = "7546";
+		var row07DungeonLabel = "The Underrot";
+		var row07DungeonID = "9391";
+		var row08DungeonLabel = "The Vortex Pinnacle";
+		var row08DungeonID = "5035";
+		
+		
         var api_url = "";
         var api_url_alt = "";
         var api_url_score = "";
@@ -75,14 +95,14 @@
 
         function clearTable(){
         document.getElementById("tb_headers").innerHTML = "";
-        document.getElementById("14032_tb_points").innerHTML = "";
-        document.getElementById("14063_tb_points").innerHTML = "";
-        document.getElementById("13954_tb_points").innerHTML = "";
-        document.getElementById("13982_tb_points").innerHTML = "";
-        document.getElementById("8079_tb_points").innerHTML = "";
-        document.getElementById("7672_tb_points").innerHTML = "";
-        document.getElementById("6932_tb_points").innerHTML = "";
-        document.getElementById("5965_tb_points").innerHTML = "";
+        document.getElementById("tb_row_01").innerHTML = "";
+        document.getElementById("tb_row_02").innerHTML = "";
+        document.getElementById("tb_row_03").innerHTML = "";
+        document.getElementById("tb_row_04").innerHTML = "";
+        document.getElementById("tb_row_05").innerHTML = "";
+        document.getElementById("tb_row_06").innerHTML = "";
+        document.getElementById("tb_row_07").innerHTML = "";
+        document.getElementById("tb_row_08").innerHTML = "";
 
         for (var key in tyran_dungeon_scores){
         tyran_dungeon_scores[key] = 0;
@@ -157,8 +177,8 @@
         }
 
         function getFortLowestKey() {
-        var lowestScore = fort_dungeon_scores["6932_10"];
-        var highestScore = fort_dungeon_scores["6932_10"];
+        var lowestScore = fort_dungeon_scores["9391_10"];
+        var highestScore = fort_dungeon_scores["9391_10"];
         for (var key in fort_dungeon_scores){
         lowestScore = Math.min(lowestScore, fort_dungeon_scores[key]);
         highestScore = Math.max(highestScore, fort_dungeon_scores[key]);
@@ -168,8 +188,8 @@
         }
 
         function getTyranLowestKey() {
-        var lowestScore = tyran_dungeon_scores["6932_9"];
-        var highestScore = tyran_dungeon_scores["6932_9"];
+        var lowestScore = tyran_dungeon_scores["9391_9"];
+        var highestScore = tyran_dungeon_scores["9391_9"];
         for (var key in tyran_dungeon_scores){
         lowestScore = Math.min(lowestScore, tyran_dungeon_scores[key]);
         highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
@@ -334,53 +354,45 @@
         headerDiv.appendChild(cell);
         }
 
-        <!--- 14032 AA Algeth'ar Academy --->
-        let div_01 = document.getElementById("14032_tb_points");
-        buildRow("Algeth'ar Academy: ","14032", div_01);
-        <!--- 14063 RLP Ruby Life Pools --->
-        let div_02 = document.getElementById("14063_tb_points");
-        buildRow("Ruby Life Pools: ","14063", div_02);
-        <!--- 13954 AV The Azure Vault --->
-        let div_03 = document.getElementById("13954_tb_points");
-        buildRow("The Azure Vault: ","13954", div_03);
-        <!--- 13982 NO The Nokhud Offensive --->
-        let div_04 = document.getElementById("13982_tb_points");
-        buildRow("Nokhud Offensive: ","13982", div_04);
-        <!--- 8079 COS Court of Stars --->
-        let div_05 = document.getElementById("8079_tb_points");
-        buildRow("Court of Stars: ","8079", div_05);
-        <!--- 7672 HOV Halls of Valor --->
-        let div_06 = document.getElementById("7672_tb_points");
-        buildRow("Halls of Valor: ","7672", div_06);
-        <!--- 6932 SBG Shadowmoon Burial Grounds --->
-        let div_07 = document.getElementById("6932_tb_points");
-        buildRow("Burial Grounds: ","6932", div_07);
-        <!--- 5965 TJS Temple of the Jade Serpent --->
-        let div_08 = document.getElementById("5965_tb_points");
-        buildRow("Temple of the Jade: ","5965", div_08);
+        let div_01 = document.getElementById("tb_row_01");
+        buildRow(row01DungeonLabel, row01DungeonID, div_01);
+        let div_02 = document.getElementById("tb_row_02");
+        buildRow(row02DungeonLabel, row02DungeonID, div_02);
+        let div_03 = document.getElementById("tb_row_03");
+        buildRow(row03DungeonLabel, row03DungeonID, div_03);
+        let div_04 = document.getElementById("tb_row_04");
+        buildRow(row04DungeonLabel, row04DungeonID, div_04);
+        let div_05 = document.getElementById("tb_row_05");
+        buildRow(row05DungeonLabel, row05DungeonID, div_05);
+        let div_06 = document.getElementById("tb_row_06");
+        buildRow(row06DungeonLabel, row06DungeonID, div_06);
+        let div_07 = document.getElementById("tb_row_07");
+        buildRow(row07DungeonLabel, row07DungeonID, div_07);
+        let div_08 = document.getElementById("tb_row_08");
+        buildRow(row08DungeonLabel, row08DungeonID, div_08);
 
         }
 
         var tyran_dungeon_scores = {
-        "14032_9": 0,
-        "14063_9": 0,
-        "13954_9": 0,
-        "13982_9": 0,
-        "8079_9": 0,
-        "7672_9": 0,
-        "6932_9": 0,
-        "5965_9": 0,
+        "13991_9": 0,
+        "14082_9": 0,
+        "14011_9": 0,
+        "13968_9": 0,
+        "9164_9": 0,
+        "7546_9": 0,
+        "9391_9": 0,
+        "5035_9": 0,
         }
 
         var fort_dungeon_scores = {
-        "14032_10": 0,
-        "14063_10": 0,
-        "13954_10": 0,
-        "13982_10": 0,
-        "8079_10": 0,
-        "7672_10": 0,
-        "6932_10": 0,
-        "5965_10": 0,
+        "13991_10": 0,
+        "14082_10": 0,
+        "14011_10": 0,
+        "13968_10": 0,
+        "9164_10": 0,
+        "7546_10": 0,
+        "9391_10": 0,
+        "5035_10": 0,
         }
 
 
