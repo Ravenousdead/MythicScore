@@ -73,8 +73,26 @@
 
         var numberOfCol = 8;
 
+        window.onload = function () {
+            const queryString = window.location.search;
+            if (queryString) {
+                const urlParams = new URLSearchParams(queryString);
+                const rioURL = urlParams.get('rio');
+
+                // Set the input value
+                document.getElementById("raiderioUrl").value = rioURL;
+
+                getURLInput();
+            }
+        };
+
         function getURLInput() {
             var inputUrl = document.getElementById("raiderioUrl").value;
+
+            const newUrl = window.location.origin + window.location.pathname + '?rio=' + encodeURIComponent(inputUrl);
+
+            window.history.pushState({ path: newUrl }, '', newUrl);
+
             splitUrl(inputUrl);
 
             clearTable();
