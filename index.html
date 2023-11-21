@@ -71,8 +71,7 @@
 
 
         var api_url = "";
-        var api_url_alt = "";
-        var api_url_score = "";
+        var data;
 
 
         var numberOfCol = 8;
@@ -116,14 +115,13 @@
             realm = urlArray[urlIndex + 2];
             name = urlArray[urlIndex + 3];
 
-            api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs";
-            api_url_alt = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_alternate_runs";
-            api_url_score = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_scores_by_season:current";
+            api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs,mythic_plus_alternate_runs,mythic_plus_scores_by_season:current";
         }
 
         async function getBestScore() {
             var response = await fetch(api_url);
-            var data = await response.json();
+
+            data = await response.json();
             document.getElementById('characterName').textContent = data.name + " - " + data.realm;
             for (var dun of data.mythic_plus_best_runs) {
                 var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
@@ -139,8 +137,6 @@
         }
 
         async function getAltScore() {
-            var response = await fetch(api_url_alt);
-            var data = await response.json();
             for (var dun of data.mythic_plus_alternate_runs) {
                 var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
                 var dungeonScore = dun.score;
@@ -154,15 +150,9 @@
         }
 
         async function getSeasonScore() {
-            var response = await fetch(api_url_score);
-            var data = await response.json();
-
             var seasonScore = 0;
             seasonScore = data.mythic_plus_scores_by_season[0].scores.all;
-            console.log(seasonScore);
             document.getElementById('characterScore').textContent = "Score - " + seasonScore;
-
-            console.log(fort_dungeon_scores, tyran_dungeon_scores)
             buildTable();
         }
 
