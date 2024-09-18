@@ -19,7 +19,7 @@
         }
     </style>
     <meta charset="UTF-8" />
-    <meta name="viewpoint" content="width=\, initial-scale=1.0" />
+    <meta name="viewport" content="width=\, initial-scale=1.0" />
     <title>Score Chart</title>
 </head>
 
@@ -49,27 +49,68 @@
 
 
     <script>
-        var row01DungeonLabel = "Throne of the Tides";
-        var row01DungeonID = "4738";
-        var row02DungeonLabel = "The Everbloom";
-        var row02DungeonID = "7109";
-        var row03DungeonLabel = "Black Rook Hold";
-        var row03DungeonID = "7805";
-        var row04DungeonLabel = "Darkheart Thicket";
-        var row04DungeonID = "7673";
-        var row05DungeonLabel = "Atal'Dazer";
-        var row05DungeonID = "9028";
-        var row06DungeonLabel = "Waycrest Manor";
-        var row06DungeonID = "9424";
-        var row07DungeonLabel = "Galakrond's Fall";
-        var row07DungeonID = "1000010";
-        var row08DungeonLabel = "Murozond's Rise";
-        var row08DungeonID = "1000011";
+        const dungeons = [
+            {
+                "id": 15093,
+                "challenge_mode_id": 503,
+                "slug": "arakara-city-of-echoes",
+                "name": "Ara-Kara, City of Echoes",
+                "short_name": "ARAK"
+            },
+            {
+                "id": 14979,
+                "challenge_mode_id": 502,
+                "slug": "city-of-threads",
+                "name": "City of Threads",
+                "short_name": "COT"
+            },
+            {
+                "id": 4950,
+                "challenge_mode_id": 507,
+                "slug": "grim-batol",
+                "name": "Grim Batol",
+                "short_name": "GB"
+            },
+            {
+                "id": 13334,
+                "challenge_mode_id": 375,
+                "slug": "mists-of-tirna-scithe",
+                "name": "Mists of Tirna Scithe",
+                "short_name": "MISTS"
+            },
+            {
+                "id": 9354,
+                "challenge_mode_id": 353,
+                "slug": "siege-of-boralus",
+                "name": "Siege of Boralus",
+                "short_name": "SIEGE"
+            },
+            {
+                "id": 14971,
+                "challenge_mode_id": 505,
+                "slug": "the-dawnbreaker",
+                "name": "The Dawnbreaker",
+                "short_name": "DAWN"
+            },
+            {
+                "id": 12916,
+                "challenge_mode_id": 376,
+                "slug": "the-necrotic-wake",
+                "name": "The Necrotic Wake",
+                "short_name": "NW"
+            },
+            {
+                "id": 14883,
+                "challenge_mode_id": 501,
+                "slug": "the-stonevault",
+                "name": "The Stonevault",
+                "short_name": "SV"
+            }
+        ];
 
 
         var api_url = "";
         var data;
-
 
         var numberOfCol = 8;
 
@@ -130,7 +171,7 @@
             realm = urlArray[urlIndex + 2];
             name = urlArray[urlIndex + 3];
 
-            api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs,mythic_plus_alternate_runs,mythic_plus_scores_by_season:current";
+            api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs,mythic_plus_scores_by_season:current";
         }
 
         async function getBestScore() {
@@ -139,7 +180,10 @@
             data = await response.json();
             document.getElementById('characterName').textContent = data.name + " - " + data.realm;
             for (var dun of data.mythic_plus_best_runs) {
-                var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
+                // search the array to determine if among all afixes there is one that is 10 or 9 and use that
+                var affix = dun.affixes.find(affix => affix.id === 10 || affix.id === 9);
+                // var dungeonID = String(dun.zone_id) + '_' + affix.id
+                var dungeonID = String(dun.zone_id) + '_' + affix.id
                 var dungeonScore = dun.score;
                 if (dun.affixes[0].id == 10) {
                     fort_dungeon_scores[dungeonID] = dungeonScore;
@@ -152,13 +196,15 @@
         }
 
         async function getAltScore() {
-            for (var dun of data.mythic_plus_alternate_runs) {
-                var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
-                var dungeonScore = dun.score;
-                if (dun.affixes[0].id == 10) {
-                    fort_dungeon_scores[dungeonID] = dungeonScore;
-                } else {
-                    tyran_dungeon_scores[dungeonID] = dungeonScore;
+            if (data.mythic_plus_alternate_runs?.length > 0) {
+                for (var dun of data.mythic_plus_alternate_runs) {
+                    var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
+                    var dungeonScore = dun.score;
+                    if (dun.affixes[0].id == 10) {
+                        fort_dungeon_scores[dungeonID] = dungeonScore;
+                    } else {
+                        tyran_dungeon_scores[dungeonID] = dungeonScore;
+                    }
                 }
             }
             getSeasonScore();
@@ -172,8 +218,8 @@
         }
 
         function getFortLowestKey() {
-            var lowestScore = fort_dungeon_scores[row01DungeonID + "_10"];
-            var highestScore = fort_dungeon_scores[row01DungeonID + "_10"];
+            var lowestScore = fort_dungeon_scores[dungeons[0].id + "_10"] || 0;
+            var highestScore = fort_dungeon_scores[dungeons[0].id + "_10"] || 0;
             for (var key in fort_dungeon_scores) {
                 lowestScore = Math.min(lowestScore, fort_dungeon_scores[key]);
                 highestScore = Math.max(highestScore, fort_dungeon_scores[key]);
@@ -183,8 +229,8 @@
         }
 
         function getTyranLowestKey() {
-            var lowestScore = tyran_dungeon_scores[row01DungeonID + "_9"];
-            var highestScore = tyran_dungeon_scores[row01DungeonID + "_9"];
+            var lowestScore = tyran_dungeon_scores[dungeons[0].id + "_9"];
+            var highestScore = tyran_dungeon_scores[dungeons[0].id + "_9"];
             for (var key in tyran_dungeon_scores) {
                 lowestScore = Math.min(lowestScore, tyran_dungeon_scores[key]);
                 highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
@@ -348,150 +394,51 @@
                 headerDiv.appendChild(cell);
             }
 
-            let div_01 = document.getElementById("tb_row_01");
-            buildRow(row01DungeonLabel, row01DungeonID, div_01);
-            let div_02 = document.getElementById("tb_row_02");
-            buildRow(row02DungeonLabel, row02DungeonID, div_02);
-            let div_03 = document.getElementById("tb_row_03");
-            buildRow(row03DungeonLabel, row03DungeonID, div_03);
-            let div_04 = document.getElementById("tb_row_04");
-            buildRow(row04DungeonLabel, row04DungeonID, div_04);
-            let div_05 = document.getElementById("tb_row_05");
-            buildRow(row05DungeonLabel, row05DungeonID, div_05);
-            let div_06 = document.getElementById("tb_row_06");
-            buildRow(row06DungeonLabel, row06DungeonID, div_06);
-            let div_07 = document.getElementById("tb_row_07");
-            buildRow(row07DungeonLabel, row07DungeonID, div_07);
-            let div_08 = document.getElementById("tb_row_08");
-            buildRow(row08DungeonLabel, row08DungeonID, div_08);
+            dungeons.forEach((dungeon, index) => {
+                let div = document.getElementById(`tb_row_0${index + 1}`);
+                buildRow(dungeon.name, dungeon.id.toString(), div);
+            });
 
         }
 
-        var tyran_dungeon_scores = {
-            "4738_9": 0,
-            "7109_9": 0,
-            "7805_9": 0,
-            "7673_9": 0,
-            "9028_9": 0,
-            "9424_9": 0,
-            "1000010_9": 0,
-            "1000011_9": 0,
-        }
+        var tyran_dungeon_scores = {};
+        var fort_dungeon_scores = {};
 
-        var fort_dungeon_scores = {
-            "4738_10": 0,
-            "7109_10": 0,
-            "7805_10": 0,
-            "7673_10": 0,
-            "9028_10": 0,
-            "9424_10": 0,
-            "1000010_10": 0,
-            "1000011_10": 0,
-        }
-
+        dungeons.forEach(dungeon => {
+            tyran_dungeon_scores[`${dungeon.id}_9`] = 0;
+            fort_dungeon_scores[`${dungeon.id}_10`] = 0;
+        });
 
         var keyScores = {
-            2: 60,
-            3: 67.5,
-            4: 75,
-            5: 82.5,
-            6: 90,
-            7: 112.5,
-            8: 120,
-            9: 127.5,
-            10: 135,
-            11: 145.5,
-            12: 156,
-            13: 166.5,
-            14: 192,
-            15: 202.5,
-            16: 213,
-            17: 223.5,
-            18: 234,
-            19: 244.5,
-            20: 255,
-            21: 265.5,
-            22: 276,
-            23: 286.5,
-            24: 297,
-            25: 307.5,
-            26: 318,
-            27: 328.5,
-            28: 339,
-            29: 349.5,
-            30: 360,
-            31: 370.5,
-            32: 381,
-            33: 391.5,
-            34: 402,
-            35: 412.5,
-            36: 423,
-            37: 433.5,
-            38: 444,
-            39: 454.5,
-            40: 465,
-            41: 475.5,
-            42: 486,
-            43: 496.5,
-            44: 507,
-            45: 517.5,
-            46: 528,
-            47: 538.5,
-            48: 549,
-            49: 559.5,
-            50: 570,
-        };
-
-        var keyBaseScores = {
-            2: 40,
-            3: 45,
-            4: 50,
-            5: 55,
-            6: 60,
-            7: 75,
-            8: 80,
-            9: 85,
-            10: 90,
-            11: 97,
-            12: 104,
-            13: 111,
-            14: 128,
-            15: 135,
-            16: 142,
-            17: 149,
-            18: 156,
-            19: 163,
-            20: 170,
-            21: 177,
-            22: 184,
-            23: 191,
-            24: 198,
-            25: 205,
-            26: 212,
-            27: 219,
-            28: 226,
-            29: 233,
-            30: 240,
-            31: 247,
-            32: 254,
-            33: 261,
-            34: 268,
-            35: 275,
-            36: 282,
-            37: 289,
-            38: 296,
-            39: 303,
-            40: 310,
-            41: 317,
-            42: 324,
-            43: 331,
-            44: 338,
-            45: 345,
-            46: 352,
-            47: 359,
-            48: 366,
-            49: 373,
-            50: 380,
+            2: 165,
+            3: 180,
+            4: 205,
+            5: 220,
+            6: 235,
+            7: 265,
+            8: 280,
+            9: 295,
+            10: 320,
+            11: 335,
+            12: 365,
+            13: 380,
+            14: 395,
+            15: 410,
+            16: 425,
+            17: 440,
+            18: 455,
+            19: 470,
+            20: 485,
+            21: 500,
+            22: 515,
+            23: 530,
+            24: 545,
+            25: 560,
+            26: 575,
+            27: 590,
+            28: 605,
+            29: 620,
+            30: 635
         };
 
         getBestScore();
