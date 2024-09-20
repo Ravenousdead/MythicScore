@@ -249,7 +249,7 @@
 
         function getKeyByScore(baseScore) {
             var keylvl = 0;
-            var wowScore = baseScore * 1.5;
+            var wowScore = baseScore
             for (var ks in keyScores) {
                 if (keyScores[ks] < wowScore) {
                     keylvl = parseInt(ks);
