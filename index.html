@@ -236,7 +236,8 @@
                 highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
             }
 
-            var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore) - numberOfCol + 2);
+            var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore) - 3);
+
             return Math.max(startingKey, 2)
         }
 
@@ -266,7 +267,7 @@
 
         function getArrayPoints(startingKey, fortBase, tyranBase, affixLetter) {
             var arraySize = numberOfCol;
-            var newKeyBase = keyScores[startingKey] / 1.5;
+            var newKeyBase = keyScores[startingKey];
             var tablePoints = new Array();
             var currentScore = getScore(fortBase, tyranBase);
 
@@ -281,9 +282,13 @@
 
             if (affixLetter == 'T') {
                 for (var i = 0; i < arraySize; i++) {
-                    newKeyBase = keyScores[startingKey + i] / 1.5;
+                    newKeyBase = keyScores[startingKey + i];
                     var newTyranBase = Math.max(newKeyBase, tyranBase);
                     var newScore = getScore(newTyranBase, fortBase);
+
+                    console.log('tyrant for key', startingKey + i, {
+                        newKeyBase, newTyranBase, newScore, currentScore
+                    });
                     tablePoints.push(Math.round(Math.max(0, newScore - currentScore) * 10) / 10);
                 }
             }
@@ -308,6 +313,7 @@
                 fortCalcScore = lowerKeyScore(fort_dungeon_scores[fortID]);
                 tyranCalcScore = higherKeyScore(tyran_dungeon_scores[tyranID]);
             }
+
 
             let cellN = document.createElement("td");
             let textN = document.createTextNode(dungeonName);
@@ -335,6 +341,9 @@
             var dungeonRow = getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID], 'F');
             startingKey = getTyranLowestKey();
             dungeonRow = dungeonRow.concat(getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID], 'T'));
+
+
+            console.log(dungeonName, fortCalcScore, tyranCalcScore, 'tyrant', startingKey);
 
             for (var i = 0; i < dungeonRow.length; i++) {
                 var pointValue = dungeonRow[i];
