@@ -142,20 +142,12 @@
 
         function clearTable() {
             document.getElementById("tb_headers").innerHTML = "";
-            document.getElementById("tb_row_01").innerHTML = "";
-            document.getElementById("tb_row_02").innerHTML = "";
-            document.getElementById("tb_row_03").innerHTML = "";
-            document.getElementById("tb_row_04").innerHTML = "";
-            document.getElementById("tb_row_05").innerHTML = "";
-            document.getElementById("tb_row_06").innerHTML = "";
-            document.getElementById("tb_row_07").innerHTML = "";
-            document.getElementById("tb_row_08").innerHTML = "";
-
-            for (var key in tyran_dungeon_scores) {
-                tyran_dungeon_scores[key] = 0;
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById(`tb_row_0${i}`).innerHTML = "";
             }
-            for (var key in fort_dungeon_scores) {
-                fort_dungeon_scores[key] = 0;
+
+            for (var key in dungeon_scores) {
+                dungeon_scores[key] = 0;
             }
         }
 
@@ -180,16 +172,9 @@
             data = await response.json();
             document.getElementById('characterName').textContent = data.name + " - " + data.realm;
             for (var dun of data.mythic_plus_best_runs) {
-                // search the array to determine if among all afixes there is one that is 10 or 9 and use that
-                var affix = dun.affixes.find(affix => affix.id === 10 || affix.id === 9);
-                // var dungeonID = String(dun.zone_id) + '_' + affix.id
-                var dungeonID = String(dun.zone_id) + '_' + affix.id
+                var dungeonID = String(dun.zone_id);
                 var dungeonScore = dun.score;
-                if (dun.affixes[0].id == 10) {
-                    fort_dungeon_scores[dungeonID] = dungeonScore;
-                } else {
-                    tyran_dungeon_scores[dungeonID] = dungeonScore;
-                }
+                dungeon_scores[dungeonID] = Math.max(dungeon_scores[dungeonID] || 0, dungeonScore);
             }
 
             getAltScore();
@@ -198,13 +183,9 @@
         async function getAltScore() {
             if (data.mythic_plus_alternate_runs?.length > 0) {
                 for (var dun of data.mythic_plus_alternate_runs) {
-                    var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
+                    var dungeonID = String(dun.zone_id);
                     var dungeonScore = dun.score;
-                    if (dun.affixes[0].id == 10) {
-                        fort_dungeon_scores[dungeonID] = dungeonScore;
-                    } else {
-                        tyran_dungeon_scores[dungeonID] = dungeonScore;
-                    }
+                    dungeon_scores[dungeonID] = Math.max(dungeon_scores[dungeonID] || 0, dungeonScore);
                 }
             }
             getSeasonScore();
@@ -300,50 +281,26 @@
             return [100, 150, 375];
         }
 
+        // ... existing code ...
+
         function buildRow(dungeonName, dungeonID, dungeonDiv) {
-            var fortID = dungeonID + "_10"
-            var tyranID = dungeonID + "_9"
-            var fortCalcScore = 0;
-            var tyranCalcScore = 0;
-
-            if (fort_dungeon_scores[fortID] > tyran_dungeon_scores[tyranID]) {
-                fortCalcScore = higherKeyScore(fort_dungeon_scores[fortID]);
-                tyranCalcScore = lowerKeyScore(tyran_dungeon_scores[tyranID]);
-            } else {
-                fortCalcScore = lowerKeyScore(fort_dungeon_scores[fortID]);
-                tyranCalcScore = higherKeyScore(tyran_dungeon_scores[tyranID]);
-            }
-
+            var dungeonScore = dungeon_scores[dungeonID] || 0;
 
             let cellN = document.createElement("td");
             let textN = document.createTextNode(dungeonName);
             cellN.appendChild(textN);
             dungeonDiv.appendChild(cellN);
 
-            let cellF = document.createElement("td");
-            let textF = document.createTextNode(fortCalcScore);
-            if (fortCalcScore == 0) {
-                cellF.style.backgroundColor = "#FF9999";
+            let cellS = document.createElement("td");
+            let textS = document.createTextNode(dungeonScore);
+            if (dungeonScore == 0) {
+                cellS.style.backgroundColor = "#FF9999";
             }
-            cellF.appendChild(textF);
-            dungeonDiv.appendChild(cellF);
+            cellS.appendChild(textS);
+            dungeonDiv.appendChild(cellS);
 
-            let cellT = document.createElement("td");
-            let textT = document.createTextNode(tyranCalcScore);
-            if (tyranCalcScore == 0) {
-                cellT.style.backgroundColor = "#FF9999";
-            }
-            cellT.appendChild(textT);
-            dungeonDiv.appendChild(cellT);
-
-
-            var startingKey = getFortLowestKey();
-            var dungeonRow = getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID], 'F');
-            startingKey = getTyranLowestKey();
-            dungeonRow = dungeonRow.concat(getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID], 'T'));
-
-
-            console.log(dungeonName, fortCalcScore, tyranCalcScore, 'tyrant', startingKey);
+            var startingKey = getLowestKey();
+            var dungeonRow = getArrayPoints(startingKey, dungeonScore);
 
             for (var i = 0; i < dungeonRow.length; i++) {
                 var pointValue = dungeonRow[i];
@@ -360,45 +317,54 @@
             }
         }
 
-        function buildTable() {
+        function getLowestKey() {
+            var lowestScore = Infinity;
+            var highestScore = 0;
+            for (var dungeonID in dungeon_scores) {
+                var dungeonScore = dungeon_scores[dungeonID];
+                lowestScore = Math.min(lowestScore, dungeonScore);
+                highestScore = Math.max(highestScore, dungeonScore);
+            }
+            var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore) - numberOfCol + 2);
+            return Math.max(startingKey, 2)
+        }
 
+        function getArrayPoints(startingKey, baseScore) {
+            var arraySize = numberOfCol;
+            var tablePoints = new Array();
+            var currentScore = baseScore;
+
+            for (var i = 0; i < arraySize; i++) {
+                var newKeyScore = keyScores[startingKey + i];
+                var newScore = Math.max(newKeyScore, currentScore);
+                tablePoints.push(Math.round(Math.max(0, newScore - currentScore) * 10) / 10);
+            }
+
+            return tablePoints;
+        }
+
+        function buildTable() {
             let headerDiv = document.getElementById("tb_headers");
 
-            // <th style="width: 180px; background-color: #ACB9CA">Dungeon</th>
             let cell_dungeon = document.createElement("td");
             cell_dungeon.style.backgroundColor = "#ACB9CA";
             cell_dungeon.style.width = "180px";
             let text_dungeon = document.createTextNode("Dungeon");
             cell_dungeon.appendChild(text_dungeon);
             headerDiv.appendChild(cell_dungeon);
-            //<th style="width: 100px; background-color: #9BC2E6">Fortified</th>
-            let cell_fortified = document.createElement("td");
-            cell_fortified.style.backgroundColor = "#9BC2E6";
-            cell_fortified.style.width = "100px";
-            let text_fortified = document.createTextNode("Fortified");
-            cell_fortified.appendChild(text_fortified);
-            headerDiv.appendChild(cell_fortified);
-            //<th style="width: 100px; background-color: #A9D08E">Tyrannical</th>
-            let cell_tyrannical = document.createElement("td");
-            cell_tyrannical.style.backgroundColor = "#A9D08E";
-            cell_tyrannical.style.width = "100px";
-            let text_tyrannical = document.createTextNode("Tyrannical");
-            cell_tyrannical.appendChild(text_tyrannical);
-            headerDiv.appendChild(cell_tyrannical);
 
-            var startingFortKey = getFortLowestKey();
+            let cell_score = document.createElement("td");
+            cell_score.style.backgroundColor = "#9BC2E6";
+            cell_score.style.width = "100px";
+            let text_score = document.createTextNode("Score");
+            cell_score.appendChild(text_score);
+            headerDiv.appendChild(cell_score);
+
+            var startingKey = getLowestKey();
             for (var i = 0; i < numberOfCol; i++) {
                 let cell = document.createElement("td");
                 cell.style.backgroundColor = "#9BC2E6";
-                let text = document.createTextNode(startingFortKey + i);
-                cell.appendChild(text);
-                headerDiv.appendChild(cell);
-            }
-            var startingTyranKey = getTyranLowestKey();
-            for (var i = 0; i < numberOfCol; i++) {
-                let cell = document.createElement("td");
-                cell.style.backgroundColor = "#A9D08E";
-                let text = document.createTextNode(startingTyranKey + i);
+                let text = document.createTextNode(startingKey + i);
                 cell.appendChild(text);
                 headerDiv.appendChild(cell);
             }
@@ -407,15 +373,12 @@
                 let div = document.getElementById(`tb_row_0${index + 1}`);
                 buildRow(dungeon.name, dungeon.id.toString(), div);
             });
-
         }
 
-        var tyran_dungeon_scores = {};
-        var fort_dungeon_scores = {};
+        var dungeon_scores = {};
 
         dungeons.forEach(dungeon => {
-            tyran_dungeon_scores[`${dungeon.id}_9`] = 0;
-            fort_dungeon_scores[`${dungeon.id}_10`] = 0;
+            dungeon_scores[dungeon.id.toString()] = 0;
         });
 
         var keyScores = {
