@@ -90,10 +90,11 @@ const keyScores = {
 };
 
 const STORAGE_KEY = "mythic_plus_team_urls";
+const MODE_STORAGE_KEY = "mythic_plus_active_mode"; // Add new storage key
 
 let api_url = "";
 let data;
-let currentMode = "solo"; // Default mode
+let currentMode = localStorage.getItem(MODE_STORAGE_KEY) || "solo"; // Get stored mode or default to solo
 const dungeon_scores = {}; // For solo mode
 let team_data = []; // For team mode
 const team_dungeon_scores = {}; // Combined scores for team mode
@@ -188,24 +189,49 @@ function setupModeSwitching() {
   const soloForm = document.getElementById("rioForm");
   const teamForm = document.getElementById("teamForm");
 
-  soloModeBtn.addEventListener("click", () => {
-    if (currentMode === "solo") return;
-
-    currentMode = "solo";
+  // Set initial state based on stored mode
+  if (currentMode === "team") {
+    teamModeBtn.classList.add("active");
+    soloModeBtn.classList.remove("active");
+    teamForm.classList.add("active");
+    soloForm.classList.remove("active");
+  } else {
     soloModeBtn.classList.add("active");
     teamModeBtn.classList.remove("active");
     soloForm.classList.add("active");
     teamForm.classList.remove("active");
+  }
+
+  soloModeBtn.addEventListener("click", () => {
+    if (currentMode === "solo") return;
+
+    currentMode = "solo";
+    localStorage.setItem(MODE_STORAGE_KEY, currentMode); // Store the mode
+    soloModeBtn.classList.add("active");
+    teamModeBtn.classList.remove("active");
+    soloForm.classList.add("active");
+    teamForm.classList.remove("active");
+
+    // If we have solo data, display it
+    if (data) {
+      displaySoloProfile();
+    }
   });
 
   teamModeBtn.addEventListener("click", () => {
     if (currentMode === "team") return;
 
     currentMode = "team";
+    localStorage.setItem(MODE_STORAGE_KEY, currentMode); // Store the mode
     teamModeBtn.classList.add("active");
     soloModeBtn.classList.remove("active");
     teamForm.classList.add("active");
     soloForm.classList.remove("active");
+
+    // If we have team data, display it
+    if (team_data.length > 0) {
+      displayTeamProfile();
+    }
   });
 }
 
@@ -221,7 +247,7 @@ function setupRemovePlayerButtons() {
   });
 }
 
-function updatePlayerNumbers() {
+function updatePlayerNumbers(shouldUpdateScores = true) {
   const inputs = document.querySelectorAll(".team-url");
   inputs.forEach((input, index) => {
     input.placeholder = `Enter Raider.io URL for player ${index + 1}`;
@@ -241,6 +267,58 @@ function updatePlayerNumbers() {
     addButton.disabled = true;
   } else {
     addButton.disabled = false;
+  }
+
+  // Only update team data and recalculate scores if we have team data and we should update scores
+  if (team_data.length > 0 && shouldUpdateScores) {
+    // Get current URLs
+    const currentUrls = Array.from(inputs)
+      .map((input) => input.value.trim())
+      .filter((url) => url !== "");
+
+    if (currentUrls.length > 0) {
+      // Filter team_data to only include players whose URLs are still present
+      const oldTeamSize = team_data.length;
+      team_data = team_data.filter((player) => {
+        return currentUrls.some((url) => {
+          try {
+            const urlArray = url.split("/");
+            const urlIndex = urlArray.indexOf("characters");
+            if (urlIndex === -1) return false;
+
+            const urlRegion = urlArray[urlIndex + 1];
+            const urlRealm = urlArray[urlIndex + 2];
+            const urlName = urlArray[urlIndex + 3];
+
+            return (
+              player.region.toLowerCase() === urlRegion.toLowerCase() &&
+              player.realm.toLowerCase() === urlRealm.toLowerCase() &&
+              player.name.toLowerCase() === urlName.toLowerCase()
+            );
+          } catch (e) {
+            return false;
+          }
+        });
+      });
+
+      // Only recalculate if team composition changed
+      if (oldTeamSize !== team_data.length) {
+        // Save the current URLs to storage
+        saveTeamUrlsToStorage(currentUrls);
+
+        // Recalculate team scores and update display if we're in team mode
+        if (team_data.length > 0) {
+          calculateTeamScores();
+          if (currentMode === "team") {
+            displayTeamProfile();
+          }
+        } else {
+          // If no team data left, clear the display
+          document.getElementById("characterInfo").classList.add("hidden");
+          document.getElementById("welcomeCard").classList.remove("hidden");
+        }
+      }
+    }
   }
 }
 
@@ -278,10 +356,10 @@ function addPlayerInput() {
   const removeButton = newInput.querySelector(".remove-player");
   removeButton.addEventListener("click", () => {
     newInput.remove();
-    updatePlayerNumbers();
+    updatePlayerNumbers(true); // Update scores when removing a player
   });
 
-  updatePlayerNumbers();
+  updatePlayerNumbers(false); // Don't update scores when just adding an input
 }
 
 function getURLInput() {
@@ -362,17 +440,10 @@ async function processTeamUrls(urls) {
     // Calculate team scores
     calculateTeamScores();
 
-    // Show team info and build table
-    document.getElementById("characterInfo").classList.remove("hidden");
-    document.getElementById("welcomeCard").classList.add("hidden");
-    document.getElementById("soloProfile").classList.add("hidden");
-    document.getElementById("teamProfile").classList.remove("hidden");
-
-    // Display team members
-    displayTeamMembers();
-
-    // Build table with team scores
-    buildTable("team");
+    // Show team info and build table if in team mode
+    if (currentMode === "team") {
+      displayTeamProfile();
+    }
   } catch (error) {
     console.error("Error fetching team data:", error);
     alert(
@@ -413,52 +484,55 @@ function calculateTeamScores() {
     team_dungeon_counts[dungeon.id.toString()] = 0;
   });
 
-  // Sum up scores for each dungeon across all team members
+  // Create a map to store best scores per player per dungeon
+  const playerDungeonScores = new Map(); // dungeonId -> Map(playerId -> score)
+
+  // Process each player's runs
   team_data.forEach((playerData) => {
+    const playerId = `${playerData.region}-${playerData.realm}-${playerData.name}`;
+
+    // Process best runs
     if (playerData.mythic_plus_best_runs) {
       playerData.mythic_plus_best_runs.forEach((run) => {
         const dungeonID = String(run.zone_id);
-        const dungeonScore = run.score;
-
-        // Add to the total score for this dungeon
-        team_dungeon_scores[dungeonID] =
-          (team_dungeon_scores[dungeonID] || 0) + dungeonScore;
-        // Increment the count of players with a score for this dungeon
-        team_dungeon_counts[dungeonID] =
-          (team_dungeon_counts[dungeonID] || 0) + 1;
+        if (!playerDungeonScores.has(dungeonID)) {
+          playerDungeonScores.set(dungeonID, new Map());
+        }
+        playerDungeonScores.get(dungeonID).set(playerId, run.score);
       });
     }
 
+    // Process alternate runs
     if (playerData.mythic_plus_alternate_runs) {
       playerData.mythic_plus_alternate_runs.forEach((run) => {
         const dungeonID = String(run.zone_id);
-        const dungeonScore = run.score;
+        const currentBestScore =
+          playerDungeonScores.get(dungeonID)?.get(playerId) || 0;
 
-        // For alternate runs, only count if it's better than the player's best run
-        // This is a simplification - in reality we'd need to track per-player scores
-        if (
-          !playerData.mythic_plus_best_runs.some(
-            (bestRun) =>
-              bestRun.zone_id === run.zone_id && bestRun.score >= run.score
-          )
-        ) {
-          team_dungeon_scores[dungeonID] =
-            (team_dungeon_scores[dungeonID] || 0) + dungeonScore;
-          team_dungeon_counts[dungeonID] =
-            (team_dungeon_counts[dungeonID] || 0) + 1;
+        // Only use alternate run if it's better than the best run
+        if (run.score > currentBestScore) {
+          if (!playerDungeonScores.has(dungeonID)) {
+            playerDungeonScores.set(dungeonID, new Map());
+          }
+          playerDungeonScores.get(dungeonID).set(playerId, run.score);
         }
       });
     }
   });
 
   // Calculate average scores for each dungeon
-  for (const dungeonID in team_dungeon_scores) {
-    if (team_dungeon_counts[dungeonID] > 0) {
+  dungeons.forEach((dungeon) => {
+    const dungeonID = dungeon.id.toString();
+    const dungeonScores = playerDungeonScores.get(dungeonID);
+
+    if (dungeonScores && dungeonScores.size > 0) {
+      const scores = Array.from(dungeonScores.values());
       team_dungeon_scores[dungeonID] = Math.round(
-        team_dungeon_scores[dungeonID] / team_dungeon_counts[dungeonID]
+        scores.reduce((sum, score) => sum + score, 0) / scores.length
       );
+      team_dungeon_counts[dungeonID] = scores.length;
     }
-  }
+  });
 
   // Calculate total team score (sum of all dungeon averages)
   const totalScore = Object.values(team_dungeon_scores).reduce(
@@ -618,12 +692,9 @@ async function getBestScore() {
     scoreElement.className = "score-value " + getScoreQualityClass(seasonScore);
 
     // Show character info and build table
-    document.getElementById("characterInfo").classList.remove("hidden");
-    document.getElementById("welcomeCard").classList.add("hidden");
-    document.getElementById("soloProfile").classList.remove("hidden");
-    document.getElementById("teamProfile").classList.add("hidden");
-
-    buildTable("solo");
+    if (currentMode === "solo") {
+      displaySoloProfile();
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
     alert("Error fetching data from Raider.io");
@@ -788,4 +859,21 @@ function buildTable(mode = "solo") {
 
     tableBody.appendChild(row);
   });
+}
+
+function displaySoloProfile() {
+  document.getElementById("characterInfo").classList.remove("hidden");
+  document.getElementById("welcomeCard").classList.add("hidden");
+  document.getElementById("soloProfile").classList.remove("hidden");
+  document.getElementById("teamProfile").classList.add("hidden");
+  buildTable("solo");
+}
+
+function displayTeamProfile() {
+  document.getElementById("characterInfo").classList.remove("hidden");
+  document.getElementById("welcomeCard").classList.add("hidden");
+  document.getElementById("soloProfile").classList.add("hidden");
+  document.getElementById("teamProfile").classList.remove("hidden");
+  displayTeamMembers();
+  buildTable("team");
 }
