@@ -613,7 +613,7 @@ tr:hover {
 
 .remove-player {
   position: absolute;
-  right: -40px;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
 }
