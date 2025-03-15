@@ -89,22 +89,48 @@ const keyScores = {
   30: 635,
 };
 
+const STORAGE_KEY = "mythic_plus_team_urls";
+
 let api_url = "";
 let data;
-let dungeon_scores = {};
+let currentMode = "solo"; // Default mode
+const dungeon_scores = {}; // For solo mode
+let team_data = []; // For team mode
+const team_dungeon_scores = {}; // Combined scores for team mode
+const team_dungeon_counts = {}; // Count of players with scores for each dungeon
 const numberOfCol = 8;
+const MAX_TEAM_SIZE = 5;
+const activeTab = "solo"; // Default active tab
 
 // Initialize dungeon scores
 dungeons.forEach((dungeon) => {
   dungeon_scores[dungeon.id.toString()] = 0;
+  team_dungeon_scores[dungeon.id.toString()] = 0;
+  team_dungeon_counts[dungeon.id.toString()] = 0;
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  // Set up form submission
-  document.getElementById("rioForm").addEventListener("submit", function (e) {
+document.addEventListener("DOMContentLoaded", () => {
+  // Set up mode switching
+  setupModeSwitching();
+
+  // Set up form submissions
+  document.getElementById("rioForm").addEventListener("submit", (e) => {
     e.preventDefault();
     getURLInput();
   });
+
+  document.getElementById("teamForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    getTeamURLs();
+  });
+
+  // Set up add player button
+  document
+    .getElementById("addPlayerBtn")
+    .addEventListener("click", addPlayerInput);
+
+  // Set up initial remove player buttons
+  setupRemovePlayerButtons();
 
   // Check for URL parameter
   const queryString = window.location.search;
@@ -118,14 +144,152 @@ document.addEventListener("DOMContentLoaded", function () {
       getURLInput();
     }
   }
+
+  const savedUrls = loadTeamUrlsFromStorage();
+  if (savedUrls.length > 0) {
+    // Switch to team mode
+    document.getElementById("teamModeBtn").click();
+
+    // Populate the inputs
+    populateTeamInputs(savedUrls);
+
+    // Process the saved team URLs
+    processTeamUrls(savedUrls);
+  }
 });
+
+function saveTeamUrlsToStorage(urls) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(urls));
+}
+
+function loadTeamUrlsFromStorage() {
+  const savedUrls = localStorage.getItem(STORAGE_KEY);
+  return savedUrls ? JSON.parse(savedUrls) : [];
+}
+
+function populateTeamInputs(urls) {
+  // Add inputs for each saved URL
+  urls.forEach((url, index) => {
+    if (index === 0) {
+      // Update the first default input
+      document.querySelector(".team-url").value = url;
+    } else {
+      // Add new inputs for additional URLs
+      addPlayerInput();
+      const inputs = document.querySelectorAll(".team-url");
+      inputs[index].value = url;
+    }
+  });
+}
+
+function setupModeSwitching() {
+  const soloModeBtn = document.getElementById("soloModeBtn");
+  const teamModeBtn = document.getElementById("teamModeBtn");
+  const soloForm = document.getElementById("rioForm");
+  const teamForm = document.getElementById("teamForm");
+
+  soloModeBtn.addEventListener("click", () => {
+    if (currentMode === "solo") return;
+
+    currentMode = "solo";
+    soloModeBtn.classList.add("active");
+    teamModeBtn.classList.remove("active");
+    soloForm.classList.add("active");
+    teamForm.classList.remove("active");
+  });
+
+  teamModeBtn.addEventListener("click", () => {
+    if (currentMode === "team") return;
+
+    currentMode = "team";
+    teamModeBtn.classList.add("active");
+    soloModeBtn.classList.remove("active");
+    teamForm.classList.add("active");
+    soloForm.classList.remove("active");
+  });
+}
+
+function setupRemovePlayerButtons() {
+  document.querySelectorAll(".remove-player").forEach((button) => {
+    button.addEventListener("click", function () {
+      const inputGroup = this.closest(".team-input");
+      if (inputGroup) {
+        inputGroup.remove();
+        updatePlayerNumbers();
+      }
+    });
+  });
+}
+
+function updatePlayerNumbers() {
+  const inputs = document.querySelectorAll(".team-url");
+  inputs.forEach((input, index) => {
+    input.placeholder = `Enter Raider.io URL for player ${index + 1}`;
+  });
+
+  // Show/hide remove buttons based on number of inputs
+  const removeButtons = document.querySelectorAll(".remove-player");
+  if (removeButtons.length === 1) {
+    removeButtons[0].classList.add("hidden");
+  } else {
+    removeButtons.forEach((button) => button.classList.remove("hidden"));
+  }
+
+  // Disable add button if max team size reached
+  const addButton = document.getElementById("addPlayerBtn");
+  if (inputs.length >= MAX_TEAM_SIZE) {
+    addButton.disabled = true;
+  } else {
+    addButton.disabled = false;
+  }
+}
+
+function addPlayerInput() {
+  const teamInputs = document.getElementById("teamInputs");
+  const inputCount = teamInputs.querySelectorAll(".team-input").length;
+
+  if (inputCount >= MAX_TEAM_SIZE) return;
+
+  const newInput = document.createElement("div");
+  newInput.className = "form-group team-input";
+  newInput.innerHTML = `
+    <div class="input-container">
+      <div class="input-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <input type="text" class="input team-url" placeholder="Enter Raider.io URL for player ${
+        inputCount + 1
+      }">
+    </div>
+    <button type="button" class="button button-icon remove-player">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  `;
+
+  teamInputs.appendChild(newInput);
+
+  // Add event listener to the new remove button
+  const removeButton = newInput.querySelector(".remove-player");
+  removeButton.addEventListener("click", () => {
+    newInput.remove();
+    updatePlayerNumbers();
+  });
+
+  updatePlayerNumbers();
+}
 
 function getURLInput() {
   const inputUrl = document.getElementById("raiderioUrl").value;
   if (!inputUrl) return;
 
   // Show loading state
-  setLoading(true);
+  setLoading(true, "solo");
 
   // Update URL with query parameter
   const newUrl =
@@ -140,19 +304,232 @@ function getURLInput() {
   getBestScore();
 }
 
-function setLoading(isLoading) {
-  const spinner = document.getElementById("loadingSpinner");
-  const submitText = document.getElementById("submitText");
-  const submitButton = document.getElementById("submitURL");
+function getTeamURLs() {
+  const teamUrls = Array.from(document.querySelectorAll(".team-url"))
+    .map((input) => input.value)
+    .filter((url) => url.trim() !== "");
 
-  if (isLoading) {
-    spinner.classList.remove("hidden");
-    submitText.textContent = "Loading...";
-    submitButton.disabled = true;
+  if (teamUrls.length === 0) {
+    alert("Please enter at least one valid Raider.io URL");
+    return;
+  }
+
+  // Save URLs to localStorage
+  saveTeamUrlsToStorage(teamUrls);
+
+  // Show loading state
+  setLoading(true, "team");
+
+  // Reset team data
+  team_data = [];
+
+  // Reset team dungeon scores and counts
+  dungeons.forEach((dungeon) => {
+    team_dungeon_scores[dungeon.id.toString()] = 0;
+    team_dungeon_counts[dungeon.id.toString()] = 0;
+  });
+
+  // Process each URL
+  processTeamUrls(teamUrls);
+}
+
+async function processTeamUrls(urls) {
+  try {
+    // Fetch data for each URL
+    const promises = urls.map((url) => {
+      try {
+        const apiUrl = createApiUrl(url);
+        return fetch(apiUrl).then((response) => response.json());
+      } catch (error) {
+        console.error("Error processing URL:", url, error);
+        return null;
+      }
+    });
+
+    // Wait for all requests to complete
+    const results = await Promise.all(promises);
+
+    // Filter out null results (failed requests)
+    const validResults = results.filter((result) => result !== null);
+
+    if (validResults.length === 0) {
+      throw new Error("No valid player data could be retrieved");
+    }
+
+    // Process the results
+    team_data = validResults;
+
+    // Calculate team scores
+    calculateTeamScores();
+
+    // Show team info and build table
+    document.getElementById("characterInfo").classList.remove("hidden");
+    document.getElementById("welcomeCard").classList.add("hidden");
+    document.getElementById("soloProfile").classList.add("hidden");
+    document.getElementById("teamProfile").classList.remove("hidden");
+
+    // Display team members
+    displayTeamMembers();
+
+    // Build table with team scores
+    buildTable("team");
+  } catch (error) {
+    console.error("Error fetching team data:", error);
+    alert(
+      "Error fetching data from Raider.io. Please check your URLs and try again."
+    );
+  } finally {
+    setLoading(false, "team");
+  }
+}
+
+function createApiUrl(url) {
+  const urlArray = url.split("/");
+  const urlIndex = urlArray.indexOf("characters");
+
+  if (urlIndex === -1) {
+    throw new Error("Invalid Raider.io URL");
+  }
+
+  const region = urlArray[urlIndex + 1];
+  const realm = urlArray[urlIndex + 2];
+  const name = urlArray[urlIndex + 3];
+
+  return (
+    "https://raider.io/api/v1/characters/profile?region=" +
+    region +
+    "&realm=" +
+    realm +
+    "&name=" +
+    name +
+    "&fields=mythic_plus_best_runs:all,mythic_plus_scores_by_season:current"
+  );
+}
+
+function calculateTeamScores() {
+  // Reset team dungeon scores and counts
+  dungeons.forEach((dungeon) => {
+    team_dungeon_scores[dungeon.id.toString()] = 0;
+    team_dungeon_counts[dungeon.id.toString()] = 0;
+  });
+
+  // Sum up scores for each dungeon across all team members
+  team_data.forEach((playerData) => {
+    if (playerData.mythic_plus_best_runs) {
+      playerData.mythic_plus_best_runs.forEach((run) => {
+        const dungeonID = String(run.zone_id);
+        const dungeonScore = run.score;
+
+        // Add to the total score for this dungeon
+        team_dungeon_scores[dungeonID] =
+          (team_dungeon_scores[dungeonID] || 0) + dungeonScore;
+        // Increment the count of players with a score for this dungeon
+        team_dungeon_counts[dungeonID] =
+          (team_dungeon_counts[dungeonID] || 0) + 1;
+      });
+    }
+
+    if (playerData.mythic_plus_alternate_runs) {
+      playerData.mythic_plus_alternate_runs.forEach((run) => {
+        const dungeonID = String(run.zone_id);
+        const dungeonScore = run.score;
+
+        // For alternate runs, only count if it's better than the player's best run
+        // This is a simplification - in reality we'd need to track per-player scores
+        if (
+          !playerData.mythic_plus_best_runs.some(
+            (bestRun) =>
+              bestRun.zone_id === run.zone_id && bestRun.score >= run.score
+          )
+        ) {
+          team_dungeon_scores[dungeonID] =
+            (team_dungeon_scores[dungeonID] || 0) + dungeonScore;
+          team_dungeon_counts[dungeonID] =
+            (team_dungeon_counts[dungeonID] || 0) + 1;
+        }
+      });
+    }
+  });
+
+  // Calculate average scores for each dungeon
+  for (const dungeonID in team_dungeon_scores) {
+    if (team_dungeon_counts[dungeonID] > 0) {
+      team_dungeon_scores[dungeonID] = Math.round(
+        team_dungeon_scores[dungeonID] / team_dungeon_counts[dungeonID]
+      );
+    }
+  }
+
+  // Calculate total team score (sum of all dungeon averages)
+  const totalScore = Object.values(team_dungeon_scores).reduce(
+    (sum, score) => sum + score,
+    0
+  );
+  document.getElementById("teamScore").textContent =
+    totalScore.toLocaleString();
+
+  // Set score color class
+  const scoreElement = document.getElementById("teamScore");
+  scoreElement.className = "score-value " + getScoreQualityClass(totalScore);
+}
+
+function displayTeamMembers() {
+  const teamMembersDisplay = document.getElementById("teamMembersDisplay");
+  teamMembersDisplay.innerHTML = "";
+
+  team_data.forEach((playerData) => {
+    const memberElement = document.createElement("div");
+    memberElement.className = "team-member";
+
+    const seasonScore = playerData.mythic_plus_scores_by_season[0].scores.all;
+
+    memberElement.innerHTML = `
+      <img class="team-member-avatar" src="${playerData.thumbnail_url}" alt="${
+      playerData.name
+    }">
+      <div class="team-member-info">
+        <div class="team-member-name">${playerData.name} - ${
+      playerData.realm
+    }</div>
+        <div class="team-member-score ${getScoreQualityClass(
+          seasonScore
+        )}">${seasonScore.toLocaleString()} points</div>
+      </div>
+    `;
+
+    teamMembersDisplay.appendChild(memberElement);
+  });
+}
+
+function setLoading(isLoading, mode = "solo") {
+  if (mode === "solo") {
+    const spinner = document.getElementById("loadingSpinner");
+    const submitText = document.getElementById("submitText");
+    const submitButton = document.getElementById("submitURL");
+
+    if (isLoading) {
+      spinner.classList.remove("hidden");
+      submitText.textContent = "Loading...";
+      submitButton.disabled = true;
+    } else {
+      spinner.classList.add("hidden");
+      submitText.textContent = "Submit";
+      submitButton.disabled = false;
+    }
   } else {
-    spinner.classList.add("hidden");
-    submitText.textContent = "Submit";
-    submitButton.disabled = false;
+    const spinner = document.getElementById("teamLoadingSpinner");
+    const submitText = document.getElementById("teamSubmitText");
+    const submitButton = document.getElementById("submitTeam");
+
+    if (isLoading) {
+      spinner.classList.remove("hidden");
+      submitText.textContent = "Loading...";
+      submitButton.disabled = true;
+    } else {
+      spinner.classList.add("hidden");
+      submitText.textContent = "Calculate Team Score";
+      submitButton.disabled = false;
+    }
   }
 }
 
@@ -243,13 +620,15 @@ async function getBestScore() {
     // Show character info and build table
     document.getElementById("characterInfo").classList.remove("hidden");
     document.getElementById("welcomeCard").classList.add("hidden");
+    document.getElementById("soloProfile").classList.remove("hidden");
+    document.getElementById("teamProfile").classList.add("hidden");
 
-    buildTable();
+    buildTable("solo");
   } catch (error) {
     console.error("Error fetching data:", error);
     alert("Error fetching data from Raider.io");
   } finally {
-    setLoading(false);
+    setLoading(false, "solo");
   }
 }
 
@@ -266,18 +645,19 @@ function getKeyByScore(score) {
   let keyLevel = 0;
   for (const [key, value] of Object.entries(keyScores)) {
     if (value < score) {
-      keyLevel = parseInt(key);
+      keyLevel = Number.parseInt(key);
     }
   }
   return Math.max(2, keyLevel);
 }
 
-function getLowestKey() {
-  var lowestScore = Infinity;
+function getLowestKey(mode = "solo") {
+  const scores = mode === "solo" ? dungeon_scores : team_dungeon_scores;
+  var lowestScore = Number.POSITIVE_INFINITY;
   var highestScore = 0;
 
-  for (var dungeonID in dungeon_scores) {
-    var dungeonScore = dungeon_scores[dungeonID];
+  for (var dungeonID in scores) {
+    var dungeonScore = scores[dungeonID];
     if (dungeonScore > 0) {
       lowestScore = Math.min(lowestScore, dungeonScore);
     }
@@ -285,7 +665,7 @@ function getLowestKey() {
   }
 
   // If all scores are 0, default to key level 2
-  if (lowestScore === Infinity) lowestScore = 0;
+  if (lowestScore === Number.POSITIVE_INFINITY) lowestScore = 0;
 
   var startingKey = Math.max(
     getKeyByScore(lowestScore),
@@ -329,12 +709,18 @@ function getPointsBadgeClass(points) {
   return "badge-points-very-high"; // 46+ points
 }
 
-function buildTable() {
+function buildTable(mode = "solo") {
   // Get starting key level
-  const startingKey = getLowestKey();
+  const startingKey = getLowestKey(mode);
+  const scores = mode === "solo" ? dungeon_scores : team_dungeon_scores;
 
   // Add key level headers
   const headerRow = document.getElementById("tb_headers");
+  // Clear existing headers (except first two)
+  while (headerRow.children.length > 2) {
+    headerRow.removeChild(headerRow.lastChild);
+  }
+
   for (let i = 0; i < numberOfCol; i++) {
     const keyLevel = startingKey + i;
     const th = document.createElement("th");
@@ -347,8 +733,16 @@ function buildTable() {
   const tableBody = document.getElementById("dungeonTableBody");
   tableBody.innerHTML = "";
 
-  dungeons.forEach((dungeon) => {
-    const dungeonScore = dungeon_scores[dungeon.id.toString()] || 0;
+  // Create a sorted copy of dungeons array based on scores (lowest to highest)
+  const sortedDungeons = [...dungeons].sort((a, b) => {
+    const scoreA = scores[a.id.toString()] || 0;
+    const scoreB = scores[b.id.toString()] || 0;
+    return scoreA - scoreB;
+  });
+
+  sortedDungeons.forEach((dungeon) => {
+    const dungeonID = dungeon.id.toString();
+    const dungeonScore = scores[dungeonID] || 0;
     const pointsArray = getArrayPoints(startingKey, dungeonScore);
 
     const row = document.createElement("tr");
@@ -366,9 +760,16 @@ function buildTable() {
     // Score cell
     const scoreCell = document.createElement("td");
     scoreCell.className = "text-center";
+
+    // For team mode, add the count of players with scores
+    let scoreText = dungeonScore.toString();
+    if (mode === "team" && team_dungeon_counts[dungeonID] > 0) {
+      scoreText = `${dungeonScore} (${team_dungeon_counts[dungeonID]})`;
+    }
+
     scoreCell.innerHTML = `
           <span class="badge ${getScoreBadgeClass(dungeonScore)}">
-              ${dungeonScore}
+              ${scoreText}
           </span>
       `;
     row.appendChild(scoreCell);
