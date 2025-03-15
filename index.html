@@ -13,7 +13,7 @@
 <body>
     <div class="container">
         <div id="characterInfo" class="hidden">
-            <div class="profile-header">
+            <div id="soloProfile" class="profile-header">
                 <div class="character-info">
                     <div class="avatar-container">
                         <img id="characterThumbnail" class="avatar" src="/placeholder.svg"
@@ -47,6 +47,17 @@
                 <div class="score-display">
                     <div class="score-label">Mythic+ Score</div>
                     <div id="characterScore" class="score-value quality-rare">0</div>
+                </div>
+            </div>
+
+            <div id="teamProfile" class="team-profile hidden">
+                <h2 class="team-title">Team Score Improvement</h2>
+                <div class="team-members" id="teamMembersDisplay">
+                    <!-- Team members will be displayed here -->
+                </div>
+                <div class="team-score">
+                    <div class="score-label">Team Mythic+ Score</div>
+                    <div id="teamScore" class="score-value quality-rare">0</div>
                 </div>
             </div>
 
@@ -105,15 +116,21 @@
             <div class="card-body">
                 <p
                     style="color: var(--text-secondary); margin-bottom: 1rem; text-align: center;">
-                    Enter your Raider.io profile URL to see your Mythic+ scores and potential
-                    improvements
+                    Track Mythic+ scores and potential improvements for solo players or teams
                 </p>
             </div>
         </div>
 
         <div class="card form-container">
+            <div class="card-header">
+                <div class="mode-selector">
+                    <button id="soloModeBtn" class="mode-button active">Solo</button>
+                    <button id="teamModeBtn" class="mode-button">Team</button>
+                </div>
+            </div>
             <div class="card-body">
-                <form id="rioForm" onsubmit="return false;">
+                <!-- Solo Mode Form -->
+                <form id="rioForm" class="mode-content active">
                     <div class="form-group">
                         <div class="input-container">
                             <div class="input-icon">
@@ -131,6 +148,55 @@
                         <button type="submit" id="submitURL" class="button button-primary">
                             <span id="loadingSpinner" class="spinner hidden"></span>
                             <span id="submitText">Submit</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Team Mode Form -->
+                <form id="teamForm" class="mode-content hidden">
+                    <div id="teamInputs">
+                        <div class="form-group team-input">
+                            <div class="input-container">
+                                <div class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                        height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </div>
+                                <input type="text" class="input team-url"
+                                    placeholder="Enter Raider.io URL for player 1">
+                            </div>
+                            <button type="button"
+                                class="button button-icon remove-player hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="team-actions">
+                        <button type="button" id="addPlayerBtn"
+                            class="button button-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Player
+                        </button>
+                        <button type="submit" id="submitTeam" class="button button-primary">
+                            <span id="teamLoadingSpinner" class="spinner hidden"></span>
+                            <span id="teamSubmitText">Calculate Team Score</span>
                         </button>
                     </div>
                 </form>
