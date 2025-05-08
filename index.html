@@ -50,37 +50,45 @@
 
 
         <script>
-		var row01DungeonLabel = "Throne of the Tides";
-		var row01DungeonID = "4738";
-		var row02DungeonLabel = "The Everbloom";
-		var row02DungeonID = "7109";
-		var row03DungeonLabel = "Black Rook Hold";
-		var row03DungeonID = "7805";
-		var row04DungeonLabel = "Darkheart Thicket";
-		var row04DungeonID = "7673";
-		var row05DungeonLabel = "Atal'Dazer";
-		var row05DungeonID = "9028";
-		var row06DungeonLabel = "Waycrest Manor";
-		var row06DungeonID = "9424";
-		var row07DungeonLabel = "Galakrond's Fall";
-		var row07DungeonID = "1000010";
-		var row08DungeonLabel = "Murozond's Rise";
-		var row08DungeonID = "1000011";
+		var row01DungeonLabel = "Cinderbrew Meadery";
+		var row01DungeonID = "15103";
+		var row02DungeonLabel = "Darkflame Cleft";
+		var row02DungeonID = "14882";
+		var row03DungeonLabel = "Mechagon Workshop";
+		var row03DungeonID = "800002";
+		var row04DungeonLabel = "Operation: Floodgate";
+		var row04DungeonID = "15452";
+		var row05DungeonLabel = "Priory of the Sacred Flame";
+		var row05DungeonID = "14954";
+		var row06DungeonLabel = "The Motherlode!!";
+		var row06DungeonID = "8064";
+		var row07DungeonLabel = "The Rookery";
+		var row07DungeonID = "14938";
+		var row08DungeonLabel = "Theater of Pain";
+		var row08DungeonID = "12841";
 		
+		// The Rookery					14938
+		// The Motherlode!!				8064
+		// Operation: Floodgate			15452
+		// Cinderbrew Meadery			15103
+		// Theater of Pain				12841
+		// Darkflame Cleft				14882
+		// Mechagon Workshop			800002
+		// Priory of the Sacred Flame	14954
+		
+		
+		
+		var numberOfCol = 12;
 		
         var api_url = "";
-        var api_url_alt = "";
         var api_url_score = "";
-
-
-        var numberOfCol = 8;
 
         function getURLInput(){
         var inputUrl = document.getElementById("raiderioUrl").value;
         splitUrl(inputUrl);
 
         clearTable();
-        getBestScore();
+        getDungeonScore();
         }
 
         function clearTable(){
@@ -94,11 +102,8 @@
         document.getElementById("tb_row_07").innerHTML = "";
         document.getElementById("tb_row_08").innerHTML = "";
 
-        for (var key in tyran_dungeon_scores){
-        tyran_dungeon_scores[key] = 0;
-        }
-        for (var key in fort_dungeon_scores){
-        fort_dungeon_scores[key] = 0;
+        for (var key in dungeon_scores){
+        dungeon_scores[key] = 0;
         }
         }
 
@@ -114,91 +119,45 @@
         realm = urlArray[urlIndex + 2];
         name = urlArray[urlIndex + 3];
 
-        api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs";
-        api_url_alt = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_alternate_runs";
+        api_url = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_best_runs";        
         api_url_score = "https://raider.io/api/v1/characters/profile?region=" + region + "&realm=" + realm + "&name=" + name + "&fields=mythic_plus_scores_by_season:current";
         }
 
-        <!--- Fetch the top score for each dungeon --->
-        async function getBestScore() {
-        var response = await fetch(api_url);
-        var data = await response.json();
-        document.getElementById('characterName').textContent = data.name + " - " + data.realm;
-        for (var dun of data.mythic_plus_best_runs) {
-        var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
-        var dungeonScore = dun.score;
-        if (dun.affixes[0].id == 10){
-        fort_dungeon_scores[dungeonID] = dungeonScore;
-        } else {
-        tyran_dungeon_scores[dungeonID] = dungeonScore;
-        }
-        }
-
-        getAltScore();
-        }
-
-        <!--- Fetch the alt-top score for each dungeon --->
-        async function getAltScore() {
-        var response = await fetch(api_url_alt);
-        var data = await response.json();
-        for (var dun of data.mythic_plus_alternate_runs) {
-        var dungeonID = String(dun.zone_id) + '_' + dun.affixes[0].id
-        var dungeonScore = dun.score;
-        if (dun.affixes[0].id == 10){
-        fort_dungeon_scores[dungeonID] = dungeonScore;
-        } else {
-        tyran_dungeon_scores[dungeonID] = dungeonScore;
-        }
-        }
-        getSeasonScore();
-        }
+		<!--- Fetch the score for each dungeon --->
+		async function getDungeonScore(){
+		var response = await fetch(api_url);
+		var data = await response.json();
+		document.getElementById('characterName').textContent = data.name + " - " + data.realm;
+		for (var dun of data.mythic_plus_best_runs) {
+		var dungeonID = String(dun.zone_id)
+		var dungeonScore = dun.score;
+		dungeon_scores[dungeonID] = dungeonScore;
+		}
+		
+		getSeasonScore();
+		}
 
         <!--- Fetch the overall score of the character --->
         async function getSeasonScore() {
-        var response = await fetch(api_url_score);
-        var data = await response.json();
+		var response = await fetch(api_url_score);
+		var data = await response.json();
 
-        var seasonScore = 0;
-        seasonScore = data.mythic_plus_scores_by_season[0].scores.all;
-        console.log(seasonScore);
-        document.getElementById('characterScore').textContent = "Score - " + seasonScore;
+		var seasonScore = 0;
+		seasonScore = data.mythic_plus_scores_by_season[0].scores.all;
+		console.log(seasonScore);
+		document.getElementById('characterScore').textContent = "Score - " + seasonScore;
 
-        buildTable();
+		buildTable();
         }
-
-        function getFortLowestKey() {
-        var lowestScore = fort_dungeon_scores[row01DungeonID + "_10"];
-        var highestScore = fort_dungeon_scores[row01DungeonID + "_10"];
-        for (var key in fort_dungeon_scores){
-        lowestScore = Math.min(lowestScore, fort_dungeon_scores[key]);
-        highestScore = Math.max(highestScore, fort_dungeon_scores[key]);
-        }
-        var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
+		
+		function getLowestKey() {
+		var startingKey = getKeyByScore(dungeon_scores[row01DungeonID]);
         return Math.max(startingKey, 2)
-        }
-
-        function getTyranLowestKey() {
-        var lowestScore = tyran_dungeon_scores[row01DungeonID + "_9"];
-        var highestScore = tyran_dungeon_scores[row01DungeonID + "_9"];
-        for (var key in tyran_dungeon_scores){
-        lowestScore = Math.min(lowestScore, tyran_dungeon_scores[key]);
-        highestScore = Math.max(highestScore, tyran_dungeon_scores[key]);
-        }
-
-        var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+2);
-        return Math.max(startingKey, 2)
-        }
-
-        function higherKeyScore(score){
-        return Math.round(score * 1.5 * 100) / 100;
-        }
-        function lowerKeyScore(score){
-        return Math.round(score / 2 * 100) / 100;
         }
 
         function getKeyByScore(baseScore){
         var keylvl = 0;
-        var wowScore = baseScore * 1.5;
+        var wowScore = baseScore;
         for (var ks in keyScores){
         if (keyScores[ks] < wowScore){
         keylvl = parseInt(ks);
@@ -207,34 +166,16 @@
         return Math.max(2, keylvl);
         }
 
-        function getScore(baseScore1, baseScore2){
-        var higherScore = Math.max(baseScore1, baseScore2)*1.5;
-        var lowerScore = Math.min(baseScore1, baseScore2)/2;
-        return higherScore + lowerScore;
-        }
-
-        function getArrayPoints(startingKey, fortBase, tyranBase, affixLetter){
+        function getArrayPoints(startingKey, dScore){
         var arraySize = numberOfCol;
-        var newKeyBase = keyScores[startingKey]/1.5;
+        var newKeyScore = keyScores[startingKey];
         var tablePoints = new Array();
-        var currentScore = getScore(fortBase, tyranBase);
+        var currentScore = dScore;
 
-        if (affixLetter == 'F'){
         for(var i = 0; i < arraySize; i++){
-        newKeyBase = keyScores[(startingKey + i)]/1.5;
-        var newFortBase = Math.max(newKeyBase, fortBase);
-        var newScore = getScore(newFortBase, tyranBase);
+        newKeyScore = keyScores[(startingKey + i)];
+        var newScore = Math.max(newKeyScore, currentScore);
         tablePoints.push(Math.round(Math.max(0, newScore-currentScore)*10)/10);
-        }
-        }
-
-        if (affixLetter == 'T'){
-        for(var i = 0; i < arraySize; i++){
-        newKeyBase = keyScores[startingKey + i]/1.5;
-        var newTyranBase = Math.max(newKeyBase, tyranBase);
-        var newScore = getScore(newTyranBase, fortBase);
-        tablePoints.push(Math.round(Math.max(0, newScore-currentScore)*10)/10);
-        }
         }
 
         return tablePoints;
@@ -245,45 +186,26 @@
         }
 
         function buildRow(dungeonName ,dungeonID, dungeonDiv){
-        var fortID = dungeonID + "_10"
-        var tyranID = dungeonID + "_9"
-        var fortCalcScore = 0;
-        var tyranCalcScore = 0;
-
-        if (fort_dungeon_scores[fortID] > tyran_dungeon_scores[tyranID]){
-        fortCalcScore = higherKeyScore(fort_dungeon_scores[fortID]);
-        tyranCalcScore = lowerKeyScore(tyran_dungeon_scores[tyranID]);
-        } else {
-        fortCalcScore = lowerKeyScore(fort_dungeon_scores[fortID]);
-        tyranCalcScore = higherKeyScore(tyran_dungeon_scores[tyranID]);
-        }
+		var dungeonBaseScore = 0;
+		if (dungeon_scores[dungeonID] !== undefined) {
+			dungeonBaseScore = dungeon_scores[dungeonID];
+		}
 
         let cellN = document.createElement("td");
         let textN = document.createTextNode(dungeonName);
         cellN.appendChild(textN);
         dungeonDiv.appendChild(cellN);
 
-        let cellF = document.createElement("td");
-        let textF = document.createTextNode(fortCalcScore);
-        if (fortCalcScore == 0){
-        cellF.style.backgroundColor = "#FF9999";
-        }
-        cellF.appendChild(textF);
-        dungeonDiv.appendChild(cellF);
+        let cellS = document.createElement("td");
+        let textS = document.createTextNode(dungeonBaseScore);
+		if (dungeonBaseScore == 0){
+        cellS.style.backgroundColor = "#FF9999";
+		}
+        cellS.appendChild(textS);
+        dungeonDiv.appendChild(cellS);
 
-        let cellT = document.createElement("td");
-        let textT = document.createTextNode(tyranCalcScore);
-        if (tyranCalcScore == 0){
-        cellT.style.backgroundColor = "#FF9999";
-        }
-        cellT.appendChild(textT);
-        dungeonDiv.appendChild(cellT);
-
-
-        var startingKey = getFortLowestKey();
-        var dungeonRow = getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID],'F');
-        startingKey = getTyranLowestKey();
-        dungeonRow = dungeonRow.concat(getArrayPoints(startingKey, fort_dungeon_scores[fortID], tyran_dungeon_scores[tyranID],'T'));
+        var startingKey = getLowestKey();
+        var dungeonRow = getArrayPoints(startingKey, dungeonBaseScore);
 
         for (var i=0; i < dungeonRow.length; i++){
         var pointValue = dungeonRow[i];
@@ -308,38 +230,23 @@
         // <th style="width: 180px; background-color: #ACB9CA">Dungeon</th>
         let cell_dungeon = document.createElement("td");
         cell_dungeon.style.backgroundColor = "#ACB9CA";
-        cell_dungeon.style.width = "180px";
+        cell_dungeon.style.width = "200px";
         let text_dungeon = document.createTextNode("Dungeon");
         cell_dungeon.appendChild(text_dungeon);
         headerDiv.appendChild(cell_dungeon);
         //<th style="width: 100px; background-color: #9BC2E6">Fortified</th>
-        let cell_fortified = document.createElement("td");
-        cell_fortified.style.backgroundColor = "#9BC2E6";
-        cell_fortified.style.width = "100px";
-        let text_fortified = document.createTextNode("Fortified");
-        cell_fortified.appendChild(text_fortified);
-        headerDiv.appendChild(cell_fortified);
-        //<th style="width: 100px; background-color: #A9D08E">Tyrannical</th>
-        let cell_tyrannical = document.createElement("td");
-        cell_tyrannical.style.backgroundColor = "#A9D08E";
-        cell_tyrannical.style.width = "100px";
-        let text_tyrannical = document.createTextNode("Tyrannical");
-        cell_tyrannical.appendChild(text_tyrannical);
-        headerDiv.appendChild(cell_tyrannical);
+        let cell_score = document.createElement("td");
+        cell_score.style.backgroundColor = "#ACB9CA";
+        cell_score.style.width = "80px";
+        let text_score = document.createTextNode("Score");
+        cell_score.appendChild(text_score);
+        headerDiv.appendChild(cell_score);
 
-        var startingFortKey = getFortLowestKey();
+        var startingKey = getLowestKey();
         for (var i=0; i < numberOfCol; i++){
         let cell = document.createElement("td");
         cell.style.backgroundColor = "#9BC2E6";
-        let text = document.createTextNode(startingFortKey+i);
-        cell.appendChild(text);
-        headerDiv.appendChild(cell);
-        }
-        var startingTyranKey = getTyranLowestKey();
-        for (var i=0; i < numberOfCol; i++){
-        let cell = document.createElement("td");
-        cell.style.backgroundColor = "#A9D08E";
-        let text = document.createTextNode(startingTyranKey+i);
+        let text = document.createTextNode(startingKey+i);
         cell.appendChild(text);
         headerDiv.appendChild(cell);
         }
@@ -363,134 +270,51 @@
 
         }
 
-        var tyran_dungeon_scores = {
-        "4738_9": 0,
-        "7109_9": 0,
-        "7805_9": 0,
-        "7673_9": 0,
-        "9028_9": 0,
-        "9424_9": 0,
-        "1000010_9": 0,
-        "1000011_9": 0,
-        }
 
-        var fort_dungeon_scores = {
-        "4738_10": 0,
-        "7109_10": 0,
-        "7805_10": 0,
-        "7673_10": 0,
-        "9028_10": 0,
-        "9424_10": 0,
-        "1000010_10": 0,
-        "1000011_10": 0,
+        var dungeon_scores = {
+        "14032_9": 0,
+        "13991_9": 0,
+        "14082_9": 0,
+        "14011_9": 0,
+        "14063_9": 0,
+        "13954_9": 0,
+        "13982_9": 0,
+        "13968_9": 0,
         }
-
 
         var keyScores = {
-        2: 60,
-        3: 67.5,
-        4: 75,
-        5: 82.5,
-        6: 90,
-        7: 112.5,
-        8: 120,
-        9: 127.5,
-        10: 135,
-        11: 145.5,
-        12: 156,
-        13: 166.5,
-        14: 192,
-        15: 202.5,
-        16: 213,
-        17: 223.5,
-        18: 234,
-        19: 244.5,
-        20: 255,
-        21: 265.5,
-        22: 276,
-        23: 286.5,
-        24: 297,
-        25: 307.5,
-        26: 318,
-        27: 328.5,
-        28: 339,
-        29: 349.5,
-        30: 360,
-        31: 370.5,
-        32: 381,
-        33: 391.5,
-        34: 402,
-        35: 412.5,
-        36: 423,
-        37: 433.5,
-        38: 444,
-        39: 454.5,
-        40: 465,
-        41: 475.5,
-        42: 486,
-        43: 496.5,
-        44: 507,
-        45: 517.5,
-        46: 528,
-        47: 538.5,
-        48: 549,
-        49: 559.5,
-        50: 570,
+        2: 155,
+        3: 170,
+        4: 200,
+        5: 215,
+        6: 230,
+        7: 260,
+        8: 275,
+        9: 290,
+        10: 320,
+        11: 335,
+        12: 365,
+        13: 380,
+	14: 395,
+	15: 410,
+	16: 425,
+	17: 440,
+	18: 455,
+	19: 470,
+	20: 485,
+	21: 500,
+	22: 515,
+	23: 530,
+	24: 545,
+	25: 560,
+	26: 575,
+	27: 590,
+	28: 605,
+	29: 620,
+	30: 635,
         };
 
-        var keyBaseScores = {
-        2: 40,
-        3: 45,
-        4: 50,
-        5: 55,
-        6: 60,
-        7: 75,
-        8: 80,
-        9: 85,
-        10: 90,
-        11: 97,
-        12: 104,
-        13: 111,
-        14: 128,
-        15: 135,
-        16: 142,
-        17: 149,
-        18: 156,
-        19: 163,
-        20: 170,
-        21: 177,
-        22: 184,
-        23: 191,
-        24: 198,
-        25: 205,
-        26: 212,
-        27: 219,
-        28: 226,
-        29: 233,
-        30: 240,
-        31: 247,
-        32: 254,
-        33: 261,
-        34: 268,
-        35: 275,
-        36: 282,
-        37: 289,
-        38: 296,
-        39: 303,
-        40: 310,
-        41: 317,
-        42: 324,
-        43: 331,
-        44: 338,
-        45: 345,
-        46: 352,
-        47: 359,
-        48: 366,
-        49: 373,
-        50: 380,
-        };
-
-        getBestScore();
+        getDungeonScore();
         </script>
         </body>
 
