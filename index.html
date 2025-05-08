@@ -151,7 +151,13 @@
         }
 		
 		function getLowestKey() {
-		var startingKey = getKeyByScore(dungeon_scores[row01DungeonID]);
+		var lowestScore = dungeon_scores[row01DungeonID];
+		var highestScore = dungeon_scores[row01DungeonID];
+		for (var key in dungeon_scores) {
+		lowestScore = Math.min(lowestScore, dungeon_scores[key]);
+        highestScore = Math.max(highestScore, dungeon_scores[key]);
+		}
+		var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+6);
         return Math.max(startingKey, 2)
         }
 
@@ -267,17 +273,19 @@
         buildRow(row07DungeonLabel, row07DungeonID, div_07);
         let div_08 = document.getElementById("tb_row_08");
         buildRow(row08DungeonLabel, row08DungeonID, div_08);
+
         }
 
+
         var dungeon_scores = {
-        "15103": 0,
-        "14882": 0,
-        "800002": 0,
-        "15452": 0,
-        "14954": 0,
-        "8064": 0,
-        "14938": 0,
-        "12841": 0,
+        "14032_9": 0,
+        "13991_9": 0,
+        "14082_9": 0,
+        "14011_9": 0,
+        "14063_9": 0,
+        "13954_9": 0,
+        "13982_9": 0,
+        "13968_9": 0,
         }
 
         var keyScores = {
@@ -310,7 +318,7 @@
 	28: 605,
 	29: 620,
 	30: 635,
-        };
+	};
 
         getDungeonScore();
         </script>
