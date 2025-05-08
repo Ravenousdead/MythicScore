@@ -158,8 +158,8 @@
         highestScore = Math.max(highestScore, dungeon_scores[key]);
 		}
 		var startingKey = Math.max(getKeyByScore(lowestScore), getKeyByScore(highestScore)-numberOfCol+6);
-        return Math.max(startingKey, 2)
-        }
+        return Math.max(startingKey, 2);
+		}
 
         function getKeyByScore(baseScore){
         var keylvl = 0;
